@@ -1,97 +1,119 @@
-'use client';
+"use client";
 
-import {Card, Input, Link} from "@nextui-org/react";
-import {LockIcon, MailIcon} from "@/components/icons";
-import toast, {Toaster} from 'react-hot-toast';
-import {useState} from "react";
-import { useRouter } from 'next/navigation';
+import toast, { Toaster } from "react-hot-toast";
+import { useState } from "react";
+import { useRouter } from "next/navigation";
+import {
+  CardTitle,
+  CardDescription,
+  CardHeader,
+  CardContent,
+  Card,
+} from "@/components/ui/card";
+import { Label } from "@/components/ui/label";
+import { Input } from "@/components/ui/input";
+import Link from "next/link";
+import { Button } from "@/components/ui/button";
 
 export default function LoginPage() {
-    const router = useRouter();
+  const router = useRouter();
 
-    const [email, setEmail] = useState('');
-    const [password, setPassword] = useState('');
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
 
-    const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
-        event.preventDefault();
+  const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
 
-        console.log(`Submitting form with email: ${email} and password: ${password}`);
-
-        toast.promise(
-            fetch('http://localhost:8089/auth/login', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({
-                    email,
-                    password
-                })
-            }),
-            {
-                loading: 'Logging in...',
-                success: (res) => {
-                    console.log('Server response:', res);
-                    if (res.ok) {
-                        router.push('/bucket');
-                        return 'Login successful';
-                    } else {
-                        throw new Error('Login failed');
-                    }
-                },
-                error: 'Login failed',
-            },
-            {
-                success: {
-                    duration: 4000,
-                },
-                error: {
-                    duration: 4000,
-                },
-            }
-        );
-    };
-
-    return (
-        <section className="flex flex-col items-center justify-center">
-            <Card className="p-8 max-w-lg mx-auto">
-                <form onSubmit={handleSubmit}>
-                    <h1 className="text-center text-2xl font-bold mb-8">Login</h1>
-                    <Input
-                        autoFocus
-                        endContent={
-                            <MailIcon className="text-2xl text-default-400 pointer-events-none flex-shrink-0"/>
-                        }
-                        label="Email"
-                        placeholder="Enter your email"
-                        variant="bordered"
-                        className="mb-4"
-                        value={email}
-                        onChange={(e) => setEmail(e.target.value)}
-                    />
-                    <Input
-                        endContent={
-                            <LockIcon className="text-2xl text-default-400 pointer-events-none flex-shrink-0"/>
-                        }
-                        label="Password"
-                        placeholder="Enter your password"
-                        type="password"
-                        variant="bordered"
-                        className="mb-4"
-                        value={password}
-                        onChange={(e) => setPassword(e.target.value)}
-                    />
-                    <div className="flex py-2 px-1 justify-between">
-                        <Link color="primary" href="/register" size="sm">
-                            Register
-                        </Link>
-                    </div>
-                    <button type="submit"
-                            className="w-full py-2 px-4 bg-blue-600 text-white rounded hover:bg-blue-500">Login
-                    </button>
-                </form>
-            </Card>
-            <Toaster/>
-        </section>
+    toast.promise(
+      fetch("http://localhost:8089/auth/login", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          email,
+          password,
+        }),
+      }).then(async (res) => {
+        if (res.ok) {
+          const jwt = await res.text();
+          document.cookie = `jwt=${jwt}; path=/; max-age=3600`;
+          router.push("/bucket");
+          return "Login successful";
+        } else {
+          throw new Error("Login failed");
+        }
+      }),
+      {
+        loading: "Logging in...",
+        success: "Login successful",
+        error: "Login failed",
+      },
+      {
+        success: {
+          duration: 4000,
+        },
+        error: {
+          duration: 4000,
+        },
+      }
     );
+  };
+
+  return (
+    <div className="flex flex-col min-h-[50vh] items-center justify-center px-4">
+      <Card className="w-full max-w-md mb-4">
+        <CardHeader className="space-y-1">
+          <CardTitle className="text-2xl font-bold">Login</CardTitle>
+          <CardDescription>
+            Enter your email and password to access your account.
+          </CardDescription>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          <form onSubmit={handleSubmit}>
+            <div className="space-y-2">
+              <Label htmlFor="email">Email</Label>
+              <Input
+                id="email"
+                placeholder="m@example.com"
+                required
+                type="email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+              />
+            </div>
+            <div className="space-y-2 mt-6">
+              <div className="flex items-center justify-between">
+                <Label htmlFor="password">Password</Label>
+                <Link className="text-sm underline" href="#">
+                  Forgot password?
+                </Link>
+              </div>
+              <Input
+                id="password"
+                required
+                type="password"
+                placeholder="*****"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+              />
+            </div>
+            <Button className="w-full mt-6" type="submit">
+              Sign in
+            </Button>
+          </form>
+        </CardContent>
+      </Card>
+      <div className="text-center text-sm text-gray-500 dark:text-gray-400">
+        Dont have an account? 
+        <Link
+          className="font-medium text-gray-900 hover:underline dark:text-gray-50"
+          href="/register"
+        >
+          Register
+        </Link>
+      </div>
+      <Toaster/>
+    </div>
+  );
 }
