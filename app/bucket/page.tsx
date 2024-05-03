@@ -1,11 +1,12 @@
 import React from "react";
 
-import { Input } from "@/components/ui/input"
-import { Button } from "@/components/ui/button"
-import { Badge } from "@/components/ui/badge"
-import { CardContent, Card } from "@/components/ui/card"
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
+import { CardContent, Card } from "@/components/ui/card";
+import { DropdownMenuTrigger, DropdownMenuRadioItem, DropdownMenuRadioGroup, DropdownMenuContent, DropdownMenu } from "@/components/ui/dropdown-menu";
 
-import { StarIcon, ForkIcon, LanguagesIcon } from "@/components/icons"
+import { StarIcon, ForkIcon, LanguagesIcon, LockIcon, ChevronDownIcon, EyeIcon, PlusIcon } from "@/components/icons";
 import Image from "next/image";
 
 export default function BucketPage() {
@@ -16,24 +17,60 @@ export default function BucketPage() {
           <div className="flex flex-col items-center space-y-4 text-center">
             <div className="space-y-2">
               <h1 className="text-3xl font-bold tracking-tighter sm:text-4xl md:text-5xl lg:text-6xl/none">
-                Discover Trending GitHub Repositories
+                Discover Trending Buckets
               </h1>
               <p className="mx-auto max-w-[700px] text-gray-500 md:text-xl dark:text-gray-400">
-                Explore the latest and most popular open-source projects on GitHub. Find the tools and libraries you
-                need to power your next big idea.
+                Explore the latest and most popular open-source projects on
+                buckets. Find the tools and libraries you need to power your next
+                big idea.
               </p>
             </div>
             <div className="w-full max-w-md">
               <form className="flex space-x-2">
-                <Input className="flex-1" placeholder="Search for repositories..." type="search" />
+                <Input
+                  className="flex-1"
+                  placeholder="Search for buckets..."
+                  type="search"
+                />
                 <Button type="submit">Search</Button>
               </form>
             </div>
           </div>
         </div>
       </section>
-      <section className="w-full py-6 md:py-12 lg:py-16">
-        <div className="container grid gap-6 px-4 md:px-6 lg:grid-cols-2 xl:grid-cols-3">
+      <section className="container mx-auto py-2 px-4 md:px-6">
+        <div className="flex items-center justify-between mb-6">
+          <div className="flex items-center gap-4">
+            <Button size="sm" variant="outline">
+              Create Bucket
+              <PlusIcon className="mr-2 h-4 w-4" />
+            </Button>
+          </div>
+          <div className="flex items-center gap-2">
+            <span className="text-gray-500 dark:text-gray-400">Sort by:</span>
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button size="sm" variant="outline">
+                  <span>Newest</span>
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end">
+                <DropdownMenuRadioGroup value="newest">
+                  <DropdownMenuRadioItem value="newest">
+                    Newest
+                  </DropdownMenuRadioItem>
+                  <DropdownMenuRadioItem value="oldest">
+                    Oldest
+                  </DropdownMenuRadioItem>
+                  <DropdownMenuRadioItem value="popular">
+                    Most Popular
+                  </DropdownMenuRadioItem>
+                </DropdownMenuRadioGroup>
+              </DropdownMenuContent>
+            </DropdownMenu>
+          </div>
+        </div>
+        <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-3 gap-6">
           <Card>
             <CardContent className="py-6 grid grid-cols-[80px_1fr] gap-4">
               <Image
@@ -51,7 +88,8 @@ export default function BucketPage() {
                   </Badge>
                 </div>
                 <p className="text-gray-500 dark:text-gray-400">
-                  Beautifully designed components that you can copy and paste into your apps.
+                  Beautifully designed components that you can copy and paste
+                  into your apps.
                 </p>
                 <div className="flex items-center space-x-4 text-sm text-gray-500 dark:text-gray-400">
                   <div className="flex items-center">
@@ -87,7 +125,8 @@ export default function BucketPage() {
                   </Badge>
                 </div>
                 <p className="text-gray-500 dark:text-gray-400">
-                  A set of unstyled, accessible components for building high-quality design systems and web apps.
+                  A set of unstyled, accessible components for building
+                  high-quality design systems and web apps.
                 </p>
                 <div className="flex items-center space-x-4 text-sm text-gray-500 dark:text-gray-400">
                   <div className="flex items-center">
@@ -123,7 +162,8 @@ export default function BucketPage() {
                   </Badge>
                 </div>
                 <p className="text-gray-500 dark:text-gray-400">
-                  Stitches is a CSS-in-JS library that lets you use the best bits of CSS in your JavaScript.
+                  Stitches is a CSS-in-JS library that lets you use the best
+                  bits of CSS in your JavaScript.
                 </p>
                 <div className="flex items-center space-x-4 text-sm text-gray-500 dark:text-gray-400">
                   <div className="flex items-center">
@@ -159,8 +199,8 @@ export default function BucketPage() {
                   </Badge>
                 </div>
                 <p className="text-gray-500 dark:text-gray-400">
-                  The React Framework for Production - Build your next React application with the best developer
-                  experience.
+                  The React Framework for Production - Build your next React
+                  application with the best developer experience.
                 </p>
                 <div className="flex items-center space-x-4 text-sm text-gray-500 dark:text-gray-400">
                   <div className="flex items-center">
@@ -196,7 +236,8 @@ export default function BucketPage() {
                   </Badge>
                 </div>
                 <p className="text-gray-500 dark:text-gray-400">
-                  Prisma is a next-generation ORM that makes database access easy.
+                  Prisma is a next-generation ORM that makes database access
+                  easy.
                 </p>
                 <div className="flex items-center space-x-4 text-sm text-gray-500 dark:text-gray-400">
                   <div className="flex items-center">
@@ -232,7 +273,8 @@ export default function BucketPage() {
                   </Badge>
                 </div>
                 <p className="text-gray-500 dark:text-gray-400">
-                  A utility-first CSS framework for rapidly building custom user interfaces.
+                  A utility-first CSS framework for rapidly building custom user
+                  interfaces.
                 </p>
                 <div className="flex items-center space-x-4 text-sm text-gray-500 dark:text-gray-400">
                   <div className="flex items-center">
