@@ -41,7 +41,7 @@ export const Navbar = () => {
       .find((row) => row.startsWith("jwt="));
     if (jwtCookie) {
       const token = jwtCookie.split("=")[1];
-      fetch("http://localhost:8089/auth/validate", {
+      fetch("http://localhost:8089/v1/auth/validate", {
         method: "POST",
         headers: {
           "Content-Type": "text/plain",
