@@ -25,7 +25,7 @@ export default function LoginPage() {
     event.preventDefault();
 
     toast.promise(
-      fetch("http://localhost:8089/auth/login", {
+      fetch("http://localhost:8089/v1/auth/login", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
