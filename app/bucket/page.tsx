@@ -1,81 +1,84 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
-
-import { Badge } from "@/components/ui/badge";
-import { CardContent, Card } from "@/components/ui/card";
-
-import { LanguagesIcon, PlusIcon } from "@/components/icons";
+import React, { useEffect, useState, useMemo, useCallback } from "react";
 import Image from "next/image";
-import {
-  Modal,
-  ModalContent,
-  ModalHeader,
-  ModalBody,
-  ModalFooter,
-  Button,
-  Input,
-  useDisclosure,
-  Dropdown,
-  DropdownTrigger,
-  DropdownMenu,
-  DropdownItem,
-  Pagination
-} from "@nextui-org/react";
-
-import toast, { Toaster } from "react-hot-toast";
 import Link from "next/link";
+import toast, { Toaster } from "react-hot-toast";
+import { LanguagesIcon, PlusIcon } from "@/components/icons";
+import {
+  Button,
+  Dropdown,
+  DropdownItem,
+  DropdownMenu,
+  DropdownTrigger,
+  Input,
+  Modal,
+  ModalBody,
+  ModalContent,
+  ModalFooter,
+  ModalHeader,
+  Pagination,
+  useDisclosure,
+  Chip,
+  Card,
+  CardBody,
+} from "@nextui-org/react";
+import { Bucket } from "./model/bucket";
+import { getBuckets, createBucket } from "./service/bucketService";
 
 export default function BucketPage() {
   const { isOpen, onOpen, onOpenChange } = useDisclosure();
-  const [bucket, setBucket] = useState("");
+  const [nameBucket, setNameBucket] = useState("");
   const [search, setSearch] = useState("");
-  const [data, setData] = useState<any[]>([]);
+  const [data, setData] = useState<Bucket[]>([]);
 
-  const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
-    event.preventDefault();
+  const handleSubmit = useCallback(
+    async (event: React.FormEvent<HTMLFormElement>) => {
+      event.preventDefault();
 
-    toast.promise(
-      fetch("http://localhost:8090/v1/buckets/create", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
+      toast.promise(
+        createBucket(nameBucket),
+        {
+          loading: "Creating...",
+          success: (res) => {
+            if (res.ok) {
+              getBuckets()
+                .then(setData)
+                .catch((error) =>
+                  console.error("Error fetching data: ", error)
+                );
+              return "Bucket created successful";
+            } else {
+              return "Bucket created failed";
+            }
+          },
+          error: "Bucket created failed",
         },
-        body: JSON.stringify({
-          name: bucket,
-        }),
-      }),
-      {
-        loading: "Creating...",
-        success: (res) => {
-          if (res.ok) {
-            return "Bucket created successful";
-          } else {
-            throw new Error("Bucket created failed");
-          }
-        },
-        error: "Bucket created failed",
-      },
-      {
-        success: {
-          duration: 4000,
-        },
-        error: {
-          duration: 4000,
-        },
-      }
-    );
-  };
+        {
+          success: {
+            duration: 4000,
+          },
+          error: {
+            duration: 4000,
+          },
+        }
+      );
+    },
+    [nameBucket]
+  );
 
   useEffect(() => {
-    fetch("http://localhost:8090/v1/buckets/get")
-      .then((response) => response.json())
-      .then((data) => setData(data))
+    getBuckets()
+      .then(setData)
       .catch((error) => console.error("Error fetching data: ", error));
   }, []);
 
-  const filteredData = data.filter((item) =>
-    item.name.toLowerCase().includes(search.toLowerCase())
+  const filteredData = useMemo(
+    () =>
+      data.filter((item) =>
+        item.name.toLowerCase().includes(search.toLowerCase())
+      ),
+    [data, search]
   );
 
   return (
@@ -134,9 +137,9 @@ export default function BucketPage() {
           </div>
         </div>
         <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-3 gap-6">
-          {filteredData.map((item) => (
-            <Card key={item.name}>
-              <CardContent className="py-6 grid grid-cols-[80px_1fr] gap-4 overflow-auto">
+          {filteredData.map((bucket) => (
+            <Card key={bucket.name}>
+              <CardBody className="py-6 grid grid-cols-[80px_1fr] gap-4 overflow-auto">
                 <Image
                   alt="Repository thumbnail"
                   className="aspect-square rounded-md object-cover"
@@ -146,24 +149,22 @@ export default function BucketPage() {
                 />
                 <div className="space-y-2">
                   <div className="flex items-center space-x-2">
-                    <Link href={`/intern/${item.name}`}>
-                      <h3 className="text-lg font-medium">{item.name}</h3>
+                    <Link href={`/intern/${bucket.name}`}>
+                      <h3 className="text-lg font-medium">{bucket.name}</h3>
                     </Link>
-                    <Badge className="bg-gray-100 px-2 py-1 text-xs font-medium text-gray-900 dark:bg-gray-800 dark:text-gray-50">
-                      Trending
-                    </Badge>
+                    <Chip className="px-2 py-1 text-xs">Trending</Chip>
                   </div>
                   <p className="text-gray-500 dark:text-gray-400">
-                    {item.description ? item.description : "No description"}
+                    {bucket.description ? bucket.description : "No description"}
                   </p>
                   <div className="flex items-center space-x-4 text-sm text-gray-500 dark:text-gray-400">
                     <div className="flex items-center">
                       <LanguagesIcon className="mr-1 h-4 w-4" />
-                      {item.language ? item.language : "Unknown"}
+                      {bucket.language ? bucket.language : "Unknown"}
                     </div>
                   </div>
                 </div>
-              </CardContent>
+              </CardBody>
             </Card>
           ))}
         </div>
@@ -182,14 +183,14 @@ export default function BucketPage() {
               <form onSubmit={handleSubmit}>
                 <ModalBody>
                   <Input
-                    id="bucket"
+                    id="name"
                     required
                     autoFocus
                     label="Name bucket"
                     placeholder="Enter the name of your bucket"
                     variant="bordered"
-                    value={bucket}
-                    onChange={(e) => setBucket(e.target.value)}
+                    value={nameBucket}
+                    onChange={(e) => setNameBucket(e.target.value)}
                   />
                 </ModalBody>
                 <ModalFooter>
