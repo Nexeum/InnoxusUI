@@ -19,10 +19,6 @@ export const siteConfig = {
         {
             label: "Workspace",
             href: "/workspace",
-        },
-        {
-            label: "cli",
-            href: "/cli",
         }
     ],
     navMenuItems: [
