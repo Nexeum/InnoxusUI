@@ -24,7 +24,7 @@ export default function RegisterPage() {
     event.preventDefault();
 
     toast.promise(
-      fetch("http://localhost:8089/auth/register", {
+      fetch("http://localhost:8089/v1/auth/register", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
