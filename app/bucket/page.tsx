@@ -1,15 +1,83 @@
-import React from "react";
+"use client";
 
-import { Input } from "@/components/ui/input";
-import { Button } from "@/components/ui/button";
+import React, { useEffect, useState } from "react";
+
 import { Badge } from "@/components/ui/badge";
 import { CardContent, Card } from "@/components/ui/card";
-import { DropdownMenuTrigger, DropdownMenuRadioItem, DropdownMenuRadioGroup, DropdownMenuContent, DropdownMenu } from "@/components/ui/dropdown-menu";
 
-import { StarIcon, ForkIcon, LanguagesIcon, LockIcon, ChevronDownIcon, EyeIcon, PlusIcon } from "@/components/icons";
+import { LanguagesIcon, PlusIcon } from "@/components/icons";
 import Image from "next/image";
+import {
+  Modal,
+  ModalContent,
+  ModalHeader,
+  ModalBody,
+  ModalFooter,
+  Button,
+  Input,
+  useDisclosure,
+  Dropdown,
+  DropdownTrigger,
+  DropdownMenu,
+  DropdownItem,
+  Pagination
+} from "@nextui-org/react";
+
+import toast, { Toaster } from "react-hot-toast";
+import Link from "next/link";
 
 export default function BucketPage() {
+  const { isOpen, onOpen, onOpenChange } = useDisclosure();
+  const [bucket, setBucket] = useState("");
+  const [search, setSearch] = useState("");
+  const [data, setData] = useState<any[]>([]);
+
+  const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+
+    toast.promise(
+      fetch("http://localhost:8090/v1/buckets/create", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          name: bucket,
+        }),
+      }),
+      {
+        loading: "Creating...",
+        success: (res) => {
+          if (res.ok) {
+            return "Bucket created successful";
+          } else {
+            throw new Error("Bucket created failed");
+          }
+        },
+        error: "Bucket created failed",
+      },
+      {
+        success: {
+          duration: 4000,
+        },
+        error: {
+          duration: 4000,
+        },
+      }
+    );
+  };
+
+  useEffect(() => {
+    fetch("http://localhost:8090/v1/buckets/get")
+      .then((response) => response.json())
+      .then((data) => setData(data))
+      .catch((error) => console.error("Error fetching data: ", error));
+  }, []);
+
+  const filteredData = data.filter((item) =>
+    item.name.toLowerCase().includes(search.toLowerCase())
+  );
+
   return (
     <>
       <section className="w-full py-3 md:py-6 lg:py-8 xl:py-12">
@@ -21,8 +89,8 @@ export default function BucketPage() {
               </h1>
               <p className="mx-auto max-w-[700px] text-gray-500 md:text-xl dark:text-gray-400">
                 Explore the latest and most popular open-source projects on
-                buckets. Find the tools and libraries you need to power your next
-                big idea.
+                buckets. Find the tools and libraries you need to power your
+                next big idea.
               </p>
             </div>
             <div className="w-full max-w-md">
@@ -31,8 +99,13 @@ export default function BucketPage() {
                   className="flex-1"
                   placeholder="Search for buckets..."
                   type="search"
+                  variant="bordered"
+                  value={search}
+                  onChange={(e) => setSearch(e.target.value)}
                 />
-                <Button type="submit">Search</Button>
+                <Button variant="bordered" type="submit">
+                  Search
+                </Button>
               </form>
             </div>
           </div>
@@ -41,260 +114,97 @@ export default function BucketPage() {
       <section className="container mx-auto py-2 px-4 md:px-6">
         <div className="flex items-center justify-between mb-6">
           <div className="flex items-center gap-4">
-            <Button size="sm" variant="outline">
-              Create Bucket
+            <Button variant="bordered" onPress={onOpen}>
               <PlusIcon className="mr-2 h-4 w-4" />
+              Create Bucket
             </Button>
           </div>
           <div className="flex items-center gap-2">
             <span className="text-gray-500 dark:text-gray-400">Sort by:</span>
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <Button size="sm" variant="outline">
-                  <span>Newest</span>
-                </Button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent align="end">
-                <DropdownMenuRadioGroup value="newest">
-                  <DropdownMenuRadioItem value="newest">
-                    Newest
-                  </DropdownMenuRadioItem>
-                  <DropdownMenuRadioItem value="oldest">
-                    Oldest
-                  </DropdownMenuRadioItem>
-                  <DropdownMenuRadioItem value="popular">
-                    Most Popular
-                  </DropdownMenuRadioItem>
-                </DropdownMenuRadioGroup>
-              </DropdownMenuContent>
-            </DropdownMenu>
+            <Dropdown>
+              <DropdownTrigger>
+                <Button variant="bordered">Newest</Button>
+              </DropdownTrigger>
+              <DropdownMenu aria-label="Static Actions">
+                <DropdownItem key="new">Newest</DropdownItem>
+                <DropdownItem key="old">Oldest</DropdownItem>
+                <DropdownItem key="most">Most popular</DropdownItem>
+              </DropdownMenu>
+            </Dropdown>
           </div>
         </div>
         <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-3 gap-6">
-          <Card>
-            <CardContent className="py-6 grid grid-cols-[80px_1fr] gap-4">
-              <Image
-                alt="Repository thumbnail"
-                className="aspect-square rounded-md object-cover"
-                height="80"
-                src="/placeholder.svg"
-                width="80"
-              />
-              <div className="space-y-2">
-                <div className="flex items-center space-x-2">
-                  <h3 className="text-lg font-medium">shadcn/ui</h3>
-                  <Badge className="bg-gray-100 px-2 py-1 text-xs font-medium text-gray-900 dark:bg-gray-800 dark:text-gray-50">
-                    Trending
-                  </Badge>
-                </div>
-                <p className="text-gray-500 dark:text-gray-400">
-                  Beautifully designed components that you can copy and paste
-                  into your apps.
-                </p>
-                <div className="flex items-center space-x-4 text-sm text-gray-500 dark:text-gray-400">
-                  <div className="flex items-center">
-                    <StarIcon className="mr-1 h-4 w-4" />
-                    20k
+          {filteredData.map((item) => (
+            <Card key={item.name}>
+              <CardContent className="py-6 grid grid-cols-[80px_1fr] gap-4 overflow-auto">
+                <Image
+                  alt="Repository thumbnail"
+                  className="aspect-square rounded-md object-cover"
+                  height="80"
+                  src="/placeholder.svg"
+                  width="80"
+                />
+                <div className="space-y-2">
+                  <div className="flex items-center space-x-2">
+                    <Link href={`/intern/${item.name}`}>
+                      <h3 className="text-lg font-medium">{item.name}</h3>
+                    </Link>
+                    <Badge className="bg-gray-100 px-2 py-1 text-xs font-medium text-gray-900 dark:bg-gray-800 dark:text-gray-50">
+                      Trending
+                    </Badge>
                   </div>
-                  <div className="flex items-center">
-                    <ForkIcon className="mr-1 h-4 w-4" />
-                    1.2k
-                  </div>
-                  <div className="flex items-center">
-                    <LanguagesIcon className="mr-1 h-4 w-4" />
-                    TypeScript
+                  <p className="text-gray-500 dark:text-gray-400">
+                    {item.description ? item.description : "No description"}
+                  </p>
+                  <div className="flex items-center space-x-4 text-sm text-gray-500 dark:text-gray-400">
+                    <div className="flex items-center">
+                      <LanguagesIcon className="mr-1 h-4 w-4" />
+                      {item.language ? item.language : "Unknown"}
+                    </div>
                   </div>
                 </div>
-              </div>
-            </CardContent>
-          </Card>
-          <Card>
-            <CardContent className="py-6 grid grid-cols-[80px_1fr] gap-4">
-              <Image
-                alt="Repository thumbnail"
-                className="aspect-square rounded-md object-cover"
-                height="80"
-                src="/placeholder.svg"
-                width="80"
-              />
-              <div className="space-y-2">
-                <div className="flex items-center space-x-2">
-                  <h3 className="text-lg font-medium">radix-ui/primitives</h3>
-                  <Badge className="bg-gray-100 px-2 py-1 text-xs font-medium text-gray-900 dark:bg-gray-800 dark:text-gray-50">
-                    Trending
-                  </Badge>
-                </div>
-                <p className="text-gray-500 dark:text-gray-400">
-                  A set of unstyled, accessible components for building
-                  high-quality design systems and web apps.
-                </p>
-                <div className="flex items-center space-x-4 text-sm text-gray-500 dark:text-gray-400">
-                  <div className="flex items-center">
-                    <StarIcon className="mr-1 h-4 w-4" />
-                    15k
-                  </div>
-                  <div className="flex items-center">
-                    <ForkIcon className="mr-1 h-4 w-4" />
-                    800
-                  </div>
-                  <div className="flex items-center">
-                    <LanguagesIcon className="mr-1 h-4 w-4" />
-                    TypeScript
-                  </div>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-          <Card>
-            <CardContent className="py-6 grid grid-cols-[80px_1fr] gap-4">
-              <Image
-                alt="Repository thumbnail"
-                className="aspect-square rounded-md object-cover"
-                height="80"
-                src="/placeholder.svg"
-                width="80"
-              />
-              <div className="space-y-2">
-                <div className="flex items-center space-x-2">
-                  <h3 className="text-lg font-medium">stitchesjs/stitches</h3>
-                  <Badge className="bg-gray-100 px-2 py-1 text-xs font-medium text-gray-900 dark:bg-gray-800 dark:text-gray-50">
-                    Trending
-                  </Badge>
-                </div>
-                <p className="text-gray-500 dark:text-gray-400">
-                  Stitches is a CSS-in-JS library that lets you use the best
-                  bits of CSS in your JavaScript.
-                </p>
-                <div className="flex items-center space-x-4 text-sm text-gray-500 dark:text-gray-400">
-                  <div className="flex items-center">
-                    <StarIcon className="mr-1 h-4 w-4" />
-                    12k
-                  </div>
-                  <div className="flex items-center">
-                    <ForkIcon className="mr-1 h-4 w-4" />
-                    600
-                  </div>
-                  <div className="flex items-center">
-                    <LanguagesIcon className="mr-1 h-4 w-4" />
-                    TypeScript
-                  </div>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-          <Card>
-            <CardContent className="py-6 grid grid-cols-[80px_1fr] gap-4">
-              <Image
-                alt="Repository thumbnail"
-                className="aspect-square rounded-md object-cover"
-                height="80"
-                src="/placeholder.svg"
-                width="80"
-              />
-              <div className="space-y-2">
-                <div className="flex items-center space-x-2">
-                  <h3 className="text-lg font-medium">vercel/next.js</h3>
-                  <Badge className="bg-gray-100 px-2 py-1 text-xs font-medium text-gray-900 dark:bg-gray-800 dark:text-gray-50">
-                    Trending
-                  </Badge>
-                </div>
-                <p className="text-gray-500 dark:text-gray-400">
-                  The React Framework for Production - Build your next React
-                  application with the best developer experience.
-                </p>
-                <div className="flex items-center space-x-4 text-sm text-gray-500 dark:text-gray-400">
-                  <div className="flex items-center">
-                    <StarIcon className="mr-1 h-4 w-4" />
-                    90k
-                  </div>
-                  <div className="flex items-center">
-                    <ForkIcon className="mr-1 h-4 w-4" />
-                    10k
-                  </div>
-                  <div className="flex items-center">
-                    <LanguagesIcon className="mr-1 h-4 w-4" />
-                    JavaScript
-                  </div>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-          <Card>
-            <CardContent className="py-6 grid grid-cols-[80px_1fr] gap-4">
-              <Image
-                alt="Repository thumbnail"
-                className="aspect-square rounded-md object-cover"
-                height="80"
-                src="/placeholder.svg"
-                width="80"
-              />
-              <div className="space-y-2">
-                <div className="flex items-center space-x-2">
-                  <h3 className="text-lg font-medium">prisma/prisma</h3>
-                  <Badge className="bg-gray-100 px-2 py-1 text-xs font-medium text-gray-900 dark:bg-gray-800 dark:text-gray-50">
-                    Trending
-                  </Badge>
-                </div>
-                <p className="text-gray-500 dark:text-gray-400">
-                  Prisma is a next-generation ORM that makes database access
-                  easy.
-                </p>
-                <div className="flex items-center space-x-4 text-sm text-gray-500 dark:text-gray-400">
-                  <div className="flex items-center">
-                    <StarIcon className="mr-1 h-4 w-4" />
-                    25k
-                  </div>
-                  <div className="flex items-center">
-                    <ForkIcon className="mr-1 h-4 w-4" />
-                    1.5k
-                  </div>
-                  <div className="flex items-center">
-                    <LanguagesIcon className="mr-1 h-4 w-4" />
-                    TypeScript
-                  </div>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-          <Card>
-            <CardContent className="py-6 grid grid-cols-[80px_1fr] gap-4">
-              <Image
-                alt="Repository thumbnail"
-                className="aspect-square rounded-md object-cover"
-                height="80"
-                src="/placeholder.svg"
-                width="80"
-              />
-              <div className="space-y-2">
-                <div className="flex items-center space-x-2">
-                  <h3 className="text-lg font-medium">tailwind/tailwindcss</h3>
-                  <Badge className="bg-gray-100 px-2 py-1 text-xs font-medium text-gray-900 dark:bg-gray-800 dark:text-gray-50">
-                    Trending
-                  </Badge>
-                </div>
-                <p className="text-gray-500 dark:text-gray-400">
-                  A utility-first CSS framework for rapidly building custom user
-                  interfaces.
-                </p>
-                <div className="flex items-center space-x-4 text-sm text-gray-500 dark:text-gray-400">
-                  <div className="flex items-center">
-                    <StarIcon className="mr-1 h-4 w-4" />
-                    70k
-                  </div>
-                  <div className="flex items-center">
-                    <ForkIcon className="mr-1 h-4 w-4" />
-                    5k
-                  </div>
-                  <div className="flex items-center">
-                    <LanguagesIcon className="mr-1 h-4 w-4" />
-                    CSS
-                  </div>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
+              </CardContent>
+            </Card>
+          ))}
         </div>
+        <Toaster />
       </section>
+      <div className="mt-6 flex justify-center items-center">
+        <Pagination showControls total={5} initialPage={1} />
+      </div>
+      <Modal isOpen={isOpen} onOpenChange={onOpenChange}>
+        <ModalContent>
+          {(onClose) => (
+            <>
+              <ModalHeader className="flex flex-col gap-1">
+                Create Bucket
+              </ModalHeader>
+              <form onSubmit={handleSubmit}>
+                <ModalBody>
+                  <Input
+                    id="bucket"
+                    required
+                    autoFocus
+                    label="Name bucket"
+                    placeholder="Enter the name of your bucket"
+                    variant="bordered"
+                    value={bucket}
+                    onChange={(e) => setBucket(e.target.value)}
+                  />
+                </ModalBody>
+                <ModalFooter>
+                  <Button color="danger" variant="light" onPress={onClose}>
+                    Close
+                  </Button>
+                  <Button color="primary" type="submit" onPress={onClose}>
+                    Create
+                  </Button>
+                </ModalFooter>
+              </form>
+            </>
+          )}
+        </ModalContent>
+      </Modal>
     </>
   );
 }
