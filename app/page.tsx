@@ -42,7 +42,7 @@ export default function Home() {
 			<div className="mt-8">
 				<Snippet hideSymbol hideCopyButton variant="flat">
 					<span>
-						Don't forget VCS <Code color="primary">inx</Code>
+						Dont forget VCS <Code color="primary">inx</Code>
 					</span>
 				</Snippet>
 			</div>
