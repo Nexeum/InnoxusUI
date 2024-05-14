@@ -1,8 +1,26 @@
-import Link from "next/link"
-import { DropdownMenuTrigger, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuItem, DropdownMenuContent, DropdownMenu, DropdownMenuCheckboxItem } from "@/components/ui/dropdown-menu"
-import { Button } from "@/components/ui/button"
+"use client";
 
-import { ChevronDownIcon, GitBranchIcon, PlusIcon, LanguagesIcon, StarIcon, GitForkIcon, BugIcon, FolderIcon, FileIcon } from "@/components/icons"
+import {
+  Button,
+  Link,
+  Divider,
+  Dropdown,
+  DropdownItem,
+  DropdownMenu,
+  DropdownTrigger,
+} from "@nextui-org/react";
+
+import {
+  ChevronDownIcon,
+  GitBranchIcon,
+  PlusIcon,
+  LanguagesIcon,
+  StarIcon,
+  GitForkIcon,
+  BugIcon,
+  FolderIcon,
+  FileIcon,
+} from "@/components/icons";
 import Image from "next/image";
 
 export default function InternPage() {
@@ -10,7 +28,7 @@ export default function InternPage() {
     <>
       <header className="flex items-center justify-between px-6 py-2 border-b border-gray-200 dark:border-gray-800">
         <div className="flex items-center space-x-4">
-          <Link className="flex items-center space-x-2" href="#">
+          <Link className="flex items-center space-x-2" color="foreground" href="#">
             <Image
               alt="Owner Avatar"
               className="rounded-full"
@@ -26,64 +44,43 @@ export default function InternPage() {
           </Link>
         </div>
         <nav className="flex items-center space-x-4">
-          <Link className="text-sm font-medium hover:underline" href="#">
+          <Link color="foreground" href="#">
             Code
           </Link>
-          <Link className="text-sm font-medium hover:underline" href="#">
+          <Link color="foreground" href="#">
             Issues
           </Link>
-          <Link className="text-sm font-medium hover:underline" href="#">
+          <Link color="foreground" href="#">
             Pull requests
           </Link>
-          <Link className="text-sm font-medium hover:underline" href="#">
+          <Link color="foreground" href="#">
             Actions
           </Link>
-          <Link className="text-sm font-medium hover:underline" href="#">
+          <Link color="foreground" href="#">
             Projects
           </Link>
-          <Link className="text-sm font-medium hover:underline" href="#">
+          <Link color="foreground" href="#">
             Wiki
           </Link>
-          <Link className="text-sm font-medium hover:underline" href="#">
+          <Link color="foreground" href="#">
             Security
           </Link>
-          <Link className="text-sm font-medium hover:underline" href="#">
+          <Link color="foreground" href="#">
             Insights
           </Link>
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button className="px-2 py-2" variant="outline">
-                <ChevronDownIcon className="h-4 w-4" />
-                <span className="sr-only">Branch</span>
-              </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent
-              align="end"
-              alignOffset={-5}
-              className="w-[200px]"
-              forceMount
-            >
-              <DropdownMenuLabel>Branches</DropdownMenuLabel>
-              <DropdownMenuSeparator />
-              <DropdownMenuItem>
-                <GitBranchIcon className="mr-2 h-4 w-4" />
-                main
-              </DropdownMenuItem>
-              <DropdownMenuItem>
-                <GitBranchIcon className="mr-2 h-4 w-4" />
-                develop
-              </DropdownMenuItem>
-              <DropdownMenuItem>
-                <GitBranchIcon className="mr-2 h-4 w-4" />
-                feature/new-component
-              </DropdownMenuItem>
-              <DropdownMenuSeparator />
-              <DropdownMenuItem>
-                <PlusIcon className="mr-2 h-4 w-4" />
-                Create Branch{"\n"}
-              </DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenu>
+          <Dropdown>
+              <DropdownTrigger>
+                <Button variant="bordered">
+                  <GitBranchIcon className="h-4 w-4" />
+                  Branch
+                </Button>
+              </DropdownTrigger>
+              <DropdownMenu aria-label="Static Actions">
+                <DropdownItem key="new">Main</DropdownItem>
+                <DropdownItem key="old">Develop</DropdownItem>
+                <DropdownItem key="most">feature/new-component</DropdownItem>
+              </DropdownMenu>
+            </Dropdown>
         </nav>
       </header>
       <main className="px-6 py-8">
@@ -118,36 +115,10 @@ export default function InternPage() {
             </div>
           </div>
           <div className="flex items-center space-x-4">
-            <Button className="px-4 py-2" variant="outline">
+            <Button className="px-4 py-2" variant="bordered">
               <StarIcon className="mr-2 h-4 w-4" />
               Star
             </Button>
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <Button className="px-2 py-2" variant="outline">
-                  <ChevronDownIcon className="h-4 w-4" />
-                </Button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent
-                align="end"
-                alignOffset={-5}
-                className="w-[200px]"
-                forceMount
-              >
-                <DropdownMenuLabel>Suggested Lists</DropdownMenuLabel>
-                <DropdownMenuSeparator />
-                <DropdownMenuCheckboxItem checked>
-                  Future Ideas
-                </DropdownMenuCheckboxItem>
-                <DropdownMenuCheckboxItem>My Stack</DropdownMenuCheckboxItem>
-                <DropdownMenuCheckboxItem>Inspiration</DropdownMenuCheckboxItem>
-                <DropdownMenuSeparator />
-                <DropdownMenuItem>
-                  <PlusIcon className="mr-2 h-4 w-4" />
-                  Create List{"\n"}
-                </DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu>
           </div>
         </div>
         <div className="mt-8 border-t border-gray-200 dark:border-gray-800 pt-8">
