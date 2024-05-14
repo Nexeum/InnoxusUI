@@ -10,11 +10,11 @@ import {
   NavbarBrand,
   NavbarItem,
   NavbarMenuItem,
-} from "@nextui-org/navbar";
-import { Button } from "@nextui-org/button";
-import { Kbd } from "@nextui-org/kbd";
-import { Link } from "@nextui-org/link";
-import { Input } from "@nextui-org/input";
+  Button,
+  Kbd,
+  Link,
+  Input,
+} from "@nextui-org/react";
 
 import { link as linkStyles } from "@nextui-org/theme";
 
@@ -28,32 +28,18 @@ import {
   DiscordIcon,
   SearchIcon,
   LockIcon,
+  Logo,
 } from "@/components/icons";
 
-import { Logo } from "@/components/icons";
+import { getJwtFromCookie, validateToken } from "./service/tokenService";
 
 export const Navbar = () => {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
 
   useEffect(() => {
-    const jwtCookie = document.cookie
-      .split("; ")
-      .find((row) => row.startsWith("jwt="));
-    if (jwtCookie) {
-      const token = jwtCookie.split("=")[1];
-      fetch("http://localhost:8089/v1/auth/validate", {
-        method: "POST",
-        headers: {
-          "Content-Type": "text/plain",
-        },
-        body: token,
-      })
-        .then((res) => {
-          return res.text();
-        })
-        .then((data) => {
-          setIsLoggedIn(data === "true");
-        });
+    const token = getJwtFromCookie();
+    if (token) {
+      validateToken(token).then(setIsLoggedIn);
     }
   }, []);
 
@@ -88,20 +74,24 @@ export const Navbar = () => {
           </NextLink>
         </NavbarBrand>
         <ul className="hidden lg:flex gap-4 justify-start ml-2">
-          {siteConfig.navItems.map((item) => (
-            <NavbarItem key={item.href}>
-              <NextLink
-                className={clsx(
-                  linkStyles({ color: "foreground" }),
-                  "data-[active=true]:text-primary data-[active=true]:font-medium"
-                )}
-                color="foreground"
-                href={item.href}
-              >
-                {item.label}
-              </NextLink>
-            </NavbarItem>
-          ))}
+          {siteConfig.navItems
+            .filter(
+              (item) => isLoggedIn || ["Home", "Docs"].includes(item.label)
+            )
+            .map((item) => (
+              <NavbarItem key={item.href}>
+                <NextLink
+                  className={clsx(
+                    linkStyles({ color: "foreground" }),
+                    "data-[active=true]:text-primary data-[active=true]:font-medium"
+                  )}
+                  color="foreground"
+                  href={item.href}
+                >
+                  {item.label}
+                </NextLink>
+              </NavbarItem>
+            ))}
         </ul>
       </NavbarContent>
 
