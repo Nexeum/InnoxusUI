@@ -1,19 +1,22 @@
 "use client";
 
+import {
+  Card,
+  CardHeader,
+  CardBody,
+  Button,
+  Link,
+  Divider,
+  Input,
+} from "@nextui-org/react";
+
+import { LockIcon, MailIcon } from "@/components/icons";
+
 import toast, { Toaster } from "react-hot-toast";
+
+import { login } from "./service/authService";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import {
-  CardTitle,
-  CardDescription,
-  CardHeader,
-  CardContent,
-  Card,
-} from "@/components/ui/card";
-import { Label } from "@/components/ui/label";
-import { Input } from "@/components/ui/input";
-import Link from "next/link";
-import { Button } from "@/components/ui/button";
 
 export default function LoginPage() {
   const router = useRouter();
@@ -25,29 +28,14 @@ export default function LoginPage() {
     event.preventDefault();
 
     toast.promise(
-      fetch("http://localhost:8089/v1/auth/login", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          email,
-          password,
-        }),
-      }).then(async (res) => {
-        if (res.ok) {
-          const jwt = await res.text();
-          document.cookie = `jwt=${jwt}; path=/; max-age=3600`;
-          router.push("/bucket");
-          return "Login successful";
-        } else {
-          throw new Error("Login failed");
-        }
-      }),
+      login(email, password),
       {
         loading: "Logging in...",
-        success: "Login successful",
-        error: "Login failed",
+        success: () => {
+          router.push("/bucket");
+          return "Login successful";
+        },
+        error: (err) => err.message,
       },
       {
         success: {
@@ -64,36 +52,44 @@ export default function LoginPage() {
     <div className="flex flex-col min-h-[50vh] items-center justify-center px-4">
       <Card className="w-full max-w-md mb-4">
         <CardHeader className="space-y-1">
-          <CardTitle className="text-2xl font-bold">Login</CardTitle>
-          <CardDescription>
-            Enter your email and password to access your account.
-          </CardDescription>
+          <div className="flex flex-col">
+            <p className="text-md">Login</p>
+            <p className="text-small text-default-500">
+              Enter your email and password to access your account.
+            </p>
+          </div>
         </CardHeader>
-        <CardContent className="space-y-4">
+        <Divider />
+        <CardBody className="space-y-4">
           <form onSubmit={handleSubmit}>
             <div className="space-y-2">
-              <Label htmlFor="email">Email</Label>
               <Input
                 id="email"
                 placeholder="m@example.com"
-                required
+                endContent={
+                  <MailIcon className="text-2xl text-default-400 pointer-events-none flex-shrink-0" />
+                }
+                label="Email"
+                variant="bordered"
                 type="email"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
               />
             </div>
             <div className="space-y-2 mt-6">
-              <div className="flex items-center justify-between">
-                <Label htmlFor="password">Password</Label>
-                <Link className="text-sm underline" href="#">
-                  Forgot password?
-                </Link>
+              <div className="flex justify-end items-center">
+                <Link showAnchorIcon>Forgot password?</Link>
               </div>
               <Input
                 id="password"
                 required
                 type="password"
                 placeholder="*****"
+                label="Password"
+                variant="bordered"
+                endContent={
+                  <LockIcon className="text-2xl text-default-400 pointer-events-none flex-shrink-0" />
+                }
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
               />
@@ -102,18 +98,15 @@ export default function LoginPage() {
               Sign in
             </Button>
           </form>
-        </CardContent>
+        </CardBody>
       </Card>
       <div className="text-center text-sm text-gray-500 dark:text-gray-400">
-        Dont have an account? 
-        <Link
-          className="font-medium text-gray-900 hover:underline dark:text-gray-50"
-          href="/register"
-        >
+        Dont have an account?
+        <Link showAnchorIcon href="/register">
           Register
         </Link>
       </div>
-      <Toaster/>
+      <Toaster />
     </div>
   );
 }
