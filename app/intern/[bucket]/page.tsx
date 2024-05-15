@@ -3,7 +3,7 @@
 import {
   Button,
   Link,
-  Divider,
+  Image,
   Dropdown,
   DropdownItem,
   DropdownMenu,
@@ -11,9 +11,7 @@ import {
 } from "@nextui-org/react";
 
 import {
-  ChevronDownIcon,
   GitBranchIcon,
-  PlusIcon,
   LanguagesIcon,
   StarIcon,
   GitForkIcon,
@@ -21,7 +19,6 @@ import {
   FolderIcon,
   FileIcon,
 } from "@/components/icons";
-import Image from "next/image";
 
 export default function InternPage() {
   return (
