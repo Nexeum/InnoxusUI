@@ -3,17 +3,18 @@
 import React from "react";
 
 import toast, { Toaster } from "react-hot-toast";
+
 import {
-  CardTitle,
-  CardDescription,
-  CardHeader,
-  CardContent,
   Card,
-} from "@/components/ui/card";
-import { Label } from "@/components/ui/label";
-import { Input } from "@/components/ui/input";
-import Link from "next/link";
-import { Button } from "@/components/ui/button";
+  CardHeader,
+  CardBody,
+  Button,
+  Link,
+  Divider,
+  Input,
+} from "@nextui-org/react";
+
+import { register } from "./service/authService";
 
 export default function RegisterPage() {
   const [username, setUsername] = React.useState("");
@@ -22,29 +23,13 @@ export default function RegisterPage() {
 
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-
+  
     toast.promise(
-      fetch("http://localhost:8089/v1/auth/register", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          username,
-          email,
-          password,
-        }),
-      }),
+      register(username, email, password),
       {
         loading: "Registering...",
-        success: (res) => {
-          if (res.ok) {
-            return "Registration successful";
-          } else {
-            throw new Error("Registration failed");
-          }
-        },
-        error: "Registration failed",
+        success: "Registration successful",
+        error: (err) => err.message,
       },
       {
         success: {
@@ -61,39 +46,38 @@ export default function RegisterPage() {
     <div className="flex flex-col min-h-[50vh] items-center justify-center px-4">
       <Card className="w-full max-w-md mb-4">
         <CardHeader className="space-y-1">
-          <CardTitle className="text-2xl font-bold">Register</CardTitle>
-          <CardDescription>
-            Enter your username, email and password to create your account.
-          </CardDescription>
+          <div className="flex flex-col">
+            <p className="text-md">Register</p>
+            <p className="text-small text-default-500">
+              Enter your username, email and password to create your account.
+            </p>
+          </div>
         </CardHeader>
-        <CardContent className="space-y-4">
+        <Divider />
+        <CardBody className="space-y-4">
           <form onSubmit={handleSubmit}>
             <div className="space-y-2">
-              <Label htmlFor="username">Username</Label>
               <Input
                 id="username"
+                label="Username"
                 placeholder="user"
                 required
                 type="username"
                 value={username}
                 onChange={(e) => setUsername(e.target.value)}
               />
-            </div>
-            <div className="space-y-2">
-              <Label htmlFor="email">Email</Label>
               <Input
                 id="email"
+                label="Email"
                 placeholder="m@example.com"
                 required
                 type="email"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
               />
-            </div>
-            <div className="space-y-2">
-              <Label htmlFor="password">Password</Label>
               <Input
                 id="password"
+                label="Password"
                 placeholder="*****"
                 required
                 type="password"
@@ -105,12 +89,11 @@ export default function RegisterPage() {
               Sign Up
             </Button>
           </form>
-        </CardContent>
+        </CardBody>
       </Card>
       <div className="text-center text-sm text-gray-500 dark:text-gray-400">
         Already have an account?
-        <Link
-          className="font-medium text-gray-900 hover:underline dark:text-gray-50"
+        <Link showAnchorIcon
           href="/login"
         >
           Login
