@@ -1,8 +1,6 @@
 "use client";
 
 import React, { useEffect, useState, useMemo, useCallback } from "react";
-import Image from "next/image";
-import Link from "next/link";
 import toast, { Toaster } from "react-hot-toast";
 import { LanguagesIcon, PlusIcon } from "@/components/icons";
 import {
@@ -22,6 +20,8 @@ import {
   Chip,
   Card,
   CardBody,
+  Link,
+  Image,
 } from "@nextui-org/react";
 import { Bucket } from "./model/bucket";
 import { getBuckets, createBucket } from "./service/bucketService";
