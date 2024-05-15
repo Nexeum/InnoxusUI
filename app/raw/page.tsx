@@ -1,8 +1,24 @@
-import Image from "next/image";
-import Link from "next/link"
-import { Button } from "@/components/ui/button"
-import { DropdownMenuTrigger, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuItem, DropdownMenuContent, DropdownMenu } from "@/components/ui/dropdown-menu"
-import { ChevronDownIcon, ClockIcon, DeleteIcon, EyeIcon, GitBranchIcon, LanguagesIcon, PlusIcon, SaveIcon, TrashIcon } from "@/components/icons"
+"use client";
+
+import {
+  Button,
+  Link,
+  Image,
+  Dropdown,
+  DropdownItem,
+  DropdownMenu,
+  DropdownTrigger,
+} from "@nextui-org/react";
+
+import {
+  GitBranchIcon,
+  LanguagesIcon,
+  TrashIcon,
+  SaveIcon,
+  DeleteIcon,
+  EyeIcon,
+  ClockIcon
+} from "@/components/icons";
 
 export default function RawPage() {
   return (
@@ -49,40 +65,19 @@ export default function RawPage() {
           <Link className="text-sm font-medium hover:underline" href="#">
             Insights
           </Link>
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button className="px-2 py-2" variant="outline">
-                <ChevronDownIcon className="h-4 w-4" />
-                <span className="sr-only">Branch</span>
+          <Dropdown>
+            <DropdownTrigger>
+              <Button variant="bordered">
+                <GitBranchIcon className="h-4 w-4" />
+                Branch
               </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent
-              align="end"
-              alignOffset={-5}
-              className="w-[200px]"
-              forceMount
-            >
-              <DropdownMenuLabel>Branches</DropdownMenuLabel>
-              <DropdownMenuSeparator />
-              <DropdownMenuItem>
-                <GitBranchIcon className="mr-2 h-4 w-4" />
-                main
-              </DropdownMenuItem>
-              <DropdownMenuItem>
-                <GitBranchIcon className="mr-2 h-4 w-4" />
-                develop
-              </DropdownMenuItem>
-              <DropdownMenuItem>
-                <GitBranchIcon className="mr-2 h-4 w-4" />
-                feature/new-component
-              </DropdownMenuItem>
-              <DropdownMenuSeparator />
-              <DropdownMenuItem>
-                <PlusIcon className="mr-2 h-4 w-4" />
-                Create Branch{"\n"}
-              </DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenu>
+            </DropdownTrigger>
+            <DropdownMenu aria-label="Static Actions">
+              <DropdownItem key="new">Main</DropdownItem>
+              <DropdownItem key="old">Develop</DropdownItem>
+              <DropdownItem key="most">feature/new-component</DropdownItem>
+            </DropdownMenu>
+          </Dropdown>
         </nav>
       </header>
       <main className="px-6 py-8">
@@ -106,11 +101,11 @@ export default function RawPage() {
             </div>
           </div>
           <div className="flex items-center space-x-4">
-            <Button className="px-4 py-2" variant="outline">
+            <Button className="px-4 py-2" variant="bordered">
               <SaveIcon className="mr-2 h-4 w-4" />
               Save
             </Button>
-            <Button className="px-4 py-2" variant="outline">
+            <Button className="px-4 py-2" variant="bordered">
               <TrashIcon className="mr-2 h-4 w-4" />
               Delete
             </Button>
@@ -120,11 +115,11 @@ export default function RawPage() {
           <div className="flex items-center justify-between">
             <h3 className="text-lg font-semibold">README.md</h3>
             <div className="flex items-center space-x-4">
-              <Button className="px-4 py-2" variant="outline">
+              <Button className="px-4 py-2" variant="bordered">
                 <DeleteIcon className="mr-2 h-4 w-4" />
                 Edit
               </Button>
-              <Button className="px-4 py-2" variant="outline">
+              <Button className="px-4 py-2" variant="bordered">
                 <EyeIcon className="mr-2 h-4 w-4" />
                 Preview
               </Button>
