@@ -1,197 +1,262 @@
-import { Button } from "@/components/ui/button"
-import { DropdownMenuTrigger, DropdownMenuRadioItem, DropdownMenuRadioGroup, DropdownMenuContent, DropdownMenu } from "@/components/ui/dropdown-menu"
-import Link from "next/link"
-import { Badge } from "@/components/ui/badge"
-import { CardContent, Card } from "@/components/ui/card"
+"use client";
 
-import { EyeIcon, LockIcon, ChevronDownIcon, HeartIcon } from "@/components/icons"
+import React, { useEffect, useState } from "react";
+import {
+  Modal,
+  ModalContent,
+  ModalHeader,
+  ModalBody,
+  ModalFooter,
+  Button,
+  Input,
+  useDisclosure,
+  Dropdown,
+  DropdownTrigger,
+  DropdownMenu,
+  DropdownItem,
+  Select,
+  SelectItem,
+  Textarea,
+  Chip,
+  Card,
+  CardBody,
+  Link
+} from "@nextui-org/react";
+
+import {
+  EyeIcon,
+  LockIcon,
+  PlusIcon,
+} from "@/components/icons";
+
+import toast, { Toaster } from "react-hot-toast";
 
 export default function WorkspacePage() {
+  const { isOpen, onOpen, onOpenChange } = useDisclosure();
+  const [workspace, setWorkspace] = useState("");
+  const [description, setDescription] = useState("");
+  const [workspaceType, setWorkspaceType] = useState("public");
+  const [password, setPassword] = useState("");
+  const [workspaces, setWorkspaces] = useState<any[]>([]);
+  const [selectedWorkspace, setSelectedWorkspace] = useState<any>(null);
+  const [enteredPassword, setEnteredPassword] = useState("");
+
+  useEffect(() => {
+    fetch("http://localhost:8080/v1/workspaces/all")
+      .then((response) => response.json())
+      .then((data) => setWorkspaces(data));
+  }, []);
+
+  const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+
+    toast.promise(
+      fetch("http://localhost:8080/v1/workspaces/create", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          name: workspace,
+          description: description,
+          password: password,
+        }),
+      }),
+      {
+        loading: "Creating...",
+        success: (res) => {
+          if (res.ok) {
+            return "Workspace created successful";
+          } else {
+            throw new Error("Workspace created failed");
+          }
+        },
+        error: "Workspace created failed",
+      },
+      {
+        success: {
+          duration: 4000,
+        },
+        error: {
+          duration: 4000,
+        },
+      }
+    );
+  };
+
+  const handleJoin = (workspace: any) => {
+    console.log("handleJoin called");
+    setSelectedWorkspace(workspace);
+    console.log(workspace);
+    if (workspace.password) {
+      onOpen();
+    } else {
+      window.location.href = "/workspace/intern";
+    }
+  };
+
+  const handleJoinSubmit = (event: any) => {
+    event.preventDefault();
+    if (selectedWorkspace.password === enteredPassword) {
+      window.location.href = "/workspace/intern";
+    } else {
+      toast.error("Incorrect password");
+    }
+  };
+
   return (
     <main className="container mx-auto py-2 px-4 md:px-6">
       <div className="flex items-center justify-between mb-6">
         <div className="flex items-center gap-4">
-          <Button size="sm" variant="outline">
+          <Button variant="bordered" onPress={onOpen}>
+            <PlusIcon className="mr-2 h-4 w-4" />
+            Create Workspace
+          </Button>
+          <Button variant="bordered">
             <EyeIcon className="mr-2 h-4 w-4" />
             Public
           </Button>
-          <Button size="sm" variant="outline">
+          <Button variant="bordered">
             <LockIcon className="mr-2 h-4 w-4" />
             Private
           </Button>
         </div>
         <div className="flex items-center gap-2">
           <span className="text-gray-500 dark:text-gray-400">Sort by:</span>
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button size="sm" variant="outline">
-                <span>Newest</span>
-                <ChevronDownIcon className="ml-2 h-4 w-4" />
-              </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="end">
-              <DropdownMenuRadioGroup value="newest">
-                <DropdownMenuRadioItem value="newest">
-                  Newest
-                </DropdownMenuRadioItem>
-                <DropdownMenuRadioItem value="oldest">
-                  Oldest
-                </DropdownMenuRadioItem>
-                <DropdownMenuRadioItem value="popular">
-                  Most Popular
-                </DropdownMenuRadioItem>
-              </DropdownMenuRadioGroup>
-            </DropdownMenuContent>
-          </DropdownMenu>
+          <Dropdown>
+            <DropdownTrigger>
+              <Button variant="bordered">Newest</Button>
+            </DropdownTrigger>
+            <DropdownMenu aria-label="Static Actions">
+              <DropdownItem key="new">Newest</DropdownItem>
+              <DropdownItem key="old">Oldest</DropdownItem>
+              <DropdownItem key="most">Most popular</DropdownItem>
+            </DropdownMenu>
+          </Dropdown>
         </div>
       </div>
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-        <Card className="relative group overflow-hidden">
-          <Link className="absolute inset-0 z-10" href="#">
-            <span className="sr-only">View room</span>
-          </Link>
-          <CardContent className="p-6 flex flex-col justify-between h-full">
-            <div>
-              <h3 className="text-xl font-semibold">Cozy Cabin Retreat</h3>
-              <p className="text-gray-500 dark:text-gray-400 mt-2">
-                Escape to our peaceful mountain cabin, perfect for relaxation
-                and adventure.
-              </p>
-            </div>
-            <div className="flex items-center justify-between mt-4">
-              <Badge>Public</Badge>
-              <Button
-                className="group-hover:opacity-100 opacity-0 transition-opacity"
-                size="icon"
-                variant="ghost"
-              >
-                <HeartIcon className="w-5 h-5" />
-                <span className="sr-only">Save room</span>
-              </Button>
-            </div>
-          </CardContent>
-        </Card>
-        <Card className="relative group overflow-hidden">
-          <Link className="absolute inset-0 z-10" href="#">
-            <span className="sr-only">View room</span>
-          </Link>
-          <CardContent className="p-6 flex flex-col justify-between h-full">
-            <div>
-              <h3 className="text-xl font-semibold">Seaside Oasis</h3>
-              <p className="text-gray-500 dark:text-gray-400 mt-2">
-                Unwind by the ocean in our luxurious beachfront retreat.
-              </p>
-            </div>
-            <div className="flex items-center justify-between mt-4">
-              <Badge>Public</Badge>
-              <Button
-                className="group-hover:opacity-100 opacity-0 transition-opacity"
-                size="icon"
-                variant="ghost"
-              >
-                <HeartIcon className="w-5 h-5" />
-                <span className="sr-only">Save room</span>
-              </Button>
-            </div>
-          </CardContent>
-        </Card>
-        <Card className="relative group overflow-hidden">
-          <Link className="absolute inset-0 z-10" href="#">
-            <span className="sr-only">View room</span>
-          </Link>
-          <CardContent className="p-6 flex flex-col justify-between h-full">
-            <div>
-              <h3 className="text-xl font-semibold">Exclusive Penthouse</h3>
-              <p className="text-gray-500 dark:text-gray-400 mt-2">
-                Experience luxury living in our private penthouse suite.
-              </p>
-            </div>
-            <div className="flex items-center justify-between mt-4">
-              <Badge>Private</Badge>
-              <Button
-                className="group-hover:opacity-100 opacity-0 transition-opacity"
-                size="icon"
-                variant="ghost"
-              >
-                <HeartIcon className="w-5 h-5" />
-                <span className="sr-only">Save room</span>
-              </Button>
-            </div>
-          </CardContent>
-        </Card>
-        <Card className="relative group overflow-hidden">
-          <Link className="absolute inset-0 z-10" href="#">
-            <span className="sr-only">View room</span>
-          </Link>
-          <CardContent className="p-6 flex flex-col justify-between h-full">
-            <div>
-              <h3 className="text-xl font-semibold">Treehouse Hideaway</h3>
-              <p className="text-gray-500 dark:text-gray-400 mt-2">
-                Escape to a peaceful treehouse nestled in the forest.
-              </p>
-            </div>
-            <div className="flex items-center justify-between mt-4">
-              <Badge>Private</Badge>
-              <Button
-                className="group-hover:opacity-100 opacity-0 transition-opacity"
-                size="icon"
-                variant="ghost"
-              >
-                <HeartIcon className="w-5 h-5" />
-                <span className="sr-only">Save room</span>
-              </Button>
-            </div>
-          </CardContent>
-        </Card>
-        <Card className="relative group overflow-hidden">
-          <Link className="absolute inset-0 z-10" href="#">
-            <span className="sr-only">View room</span>
-          </Link>
-          <CardContent className="p-6 flex flex-col justify-between h-full">
-            <div>
-              <h3 className="text-xl font-semibold">Urban Loft</h3>
-              <p className="text-gray-500 dark:text-gray-400 mt-2">
-                Experience city living in our modern and stylish loft.
-              </p>
-            </div>
-            <div className="flex items-center justify-between mt-4">
-              <Badge>Public</Badge>
-              <Button
-                className="group-hover:opacity-100 opacity-0 transition-opacity"
-                size="icon"
-                variant="ghost"
-              >
-                <HeartIcon className="w-5 h-5" />
-                <span className="sr-only">Save room</span>
-              </Button>
-            </div>
-          </CardContent>
-        </Card>
-        <Card className="relative group overflow-hidden">
-          <Link className="absolute inset-0 z-10" href="#">
-            <span className="sr-only">View room</span>
-          </Link>
-          <CardContent className="p-6 flex flex-col justify-between h-full">
-            <div>
-              <h3 className="text-xl font-semibold">Rustic Farmhouse</h3>
-              <p className="text-gray-500 dark:text-gray-400 mt-2">
-                Unwind in the countryside at our charming farmhouse retreat.
-              </p>
-            </div>
-            <div className="flex items-center justify-between mt-4">
-              <Badge>Public</Badge>
-              <Button
-                className="group-hover:opacity-100 opacity-0 transition-opacity"
-                size="icon"
-                variant="ghost"
-              >
-                <HeartIcon className="w-5 h-5" />
-                <span className="sr-only">Save room</span>
-              </Button>
-            </div>
-          </CardContent>
-        </Card>
+        {workspaces.map((workspace) => (
+          <Card className="relative group overflow-hidden" key={workspace.id}>
+            <Link className="absolute inset-0 z-10" href="#">
+              <span className="sr-only">View room</span>
+            </Link>
+            <CardBody className="p-6 flex flex-col justify-between h-full">
+              <div>
+                <h3 className="text-xl font-semibold">{workspace.name}</h3>
+                <p className="text-gray-500 dark:text-gray-400 mt-2">
+                  {workspace.description}
+                </p>
+              </div>
+              <div className="flex items-center justify-between mt-4">
+                <Chip>{workspace.password ? "Private" : "Public"}</Chip>
+                <Button variant="bordered" onPress={onOpen}>
+                  Join
+                </Button>
+              </div>
+            </CardBody>
+          </Card>
+        ))}
+        <Toaster />
       </div>
+      <Modal isOpen={isOpen} onOpenChange={onOpenChange}>
+        <ModalContent>
+          {(onClose) => (
+            <>
+              <ModalHeader className="flex flex-col gap-1">
+                Create Bucket
+              </ModalHeader>
+              <form onSubmit={handleSubmit}>
+                <ModalBody>
+                  <Input
+                    id="name"
+                    required
+                    autoFocus
+                    label="Name workspace"
+                    placeholder="Enter the name of your workspace"
+                    variant="bordered"
+                    value={workspace}
+                    onChange={(e) => setWorkspace(e.target.value)}
+                  />
+                  <Textarea
+                    id="description"
+                    required
+                    autoFocus
+                    label="Description workspace"
+                    placeholder="Enter the description of your workspace"
+                    variant="bordered"
+                    value={description}
+                    onChange={(e) => setDescription(e.target.value)}
+                  />
+                  <Select
+                    id="workspaceType"
+                    label="Workspace Type"
+                    value={workspaceType}
+                    onChange={(e) => setWorkspaceType(e.target.value)}
+                  >
+                    <SelectItem key="public" value="public">
+                      Public
+                    </SelectItem>
+                    <SelectItem key="private" value="private">
+                      Private
+                    </SelectItem>
+                  </Select>
+                  {workspaceType === "private" && (
+                    <Input
+                      id="password"
+                      type="password"
+                      required
+                      label="Password"
+                      placeholder="Enter password for private workspace"
+                      variant="bordered"
+                      value={password}
+                      onChange={(e) => setPassword(e.target.value)}
+                    />
+                  )}
+                </ModalBody>
+                <ModalFooter>
+                  <Button color="danger" variant="light" onPress={onClose}>
+                    Close
+                  </Button>
+                  <Button color="primary" type="submit" onPress={onClose}>
+                    Create
+                  </Button>
+                </ModalFooter>
+              </form>
+            </>
+          )}
+        </ModalContent>
+      </Modal>
+      <Modal>
+        <ModalContent>
+          {(onClose) => (
+            <>
+              <form onSubmit={handleJoinSubmit}>
+                <ModalBody>
+                  <Input
+                    id="password"
+                    type="password"
+                    required
+                    label="Password"
+                    placeholder="Enter password for private workspace"
+                    variant="bordered"
+                    value={enteredPassword}
+                    onChange={(e) => setEnteredPassword(e.target.value)}
+                  />
+                </ModalBody>
+                <ModalFooter>
+                  <Button color="danger" variant="light">
+                    Close
+                  </Button>
+                  <Button color="primary" type="submit">
+                    Join
+                  </Button>
+                </ModalFooter>
+              </form>
+            </>
+          )}
+        </ModalContent>
+      </Modal>
     </main>
   );
 }
