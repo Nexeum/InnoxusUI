@@ -1,5 +1,7 @@
 "use client";
 
+import { useState } from "react";
+
 import {
   Card,
   CardHeader,
@@ -7,7 +9,7 @@ import {
   Button,
   Link,
   Divider,
-  Input,
+  Input
 } from "@nextui-org/react";
 
 import { LockIcon, MailIcon } from "@/components/icons";
@@ -15,7 +17,6 @@ import { LockIcon, MailIcon } from "@/components/icons";
 import toast, { Toaster } from "react-hot-toast";
 
 import { login } from "./service/authService";
-import { useState } from "react";
 import { useRouter } from "next/navigation";
 
 export default function LoginPage() {
