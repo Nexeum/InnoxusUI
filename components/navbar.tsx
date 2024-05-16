@@ -11,9 +11,7 @@ import {
   NavbarItem,
   NavbarMenuItem,
   Button,
-  Kbd,
   Link,
-  Input,
 } from "@nextui-org/react";
 
 import { link as linkStyles } from "@nextui-org/theme";
@@ -26,12 +24,11 @@ import { ThemeSwitch } from "@/components/theme-switch";
 import {
   GithubIcon,
   DiscordIcon,
-  SearchIcon,
   LockIcon,
   Logo,
 } from "@/components/icons";
 
-import { getJwtFromCookie, validateToken } from "./service/tokenService";
+import { getJwtFromCookie, validateToken } from "@/app/helper/jwt/validate";
 
 export const Navbar = () => {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
@@ -42,27 +39,6 @@ export const Navbar = () => {
       validateToken(token).then(setIsLoggedIn);
     }
   }, []);
-
-  const searchInput = (
-    <Input
-      aria-label="Search"
-      classNames={{
-        inputWrapper: "bg-default-100",
-        input: "text-sm",
-      }}
-      endContent={
-        <Kbd className="hidden lg:inline-block" keys={["command"]}>
-          K
-        </Kbd>
-      }
-      labelPlacement="outside"
-      placeholder="Search..."
-      startContent={
-        <SearchIcon className="text-base text-default-400 pointer-events-none flex-shrink-0" />
-      }
-      type="search"
-    />
-  );
 
   return (
     <NextUINavbar maxWidth="xl" position="sticky">
@@ -108,7 +84,6 @@ export const Navbar = () => {
           </Link>
           <ThemeSwitch />
         </NavbarItem>
-        <NavbarItem className="hidden lg:flex">{searchInput}</NavbarItem>
         <NavbarItem className="hidden md:flex">
           <Button
             as={Link}
@@ -131,7 +106,6 @@ export const Navbar = () => {
       </NavbarContent>
 
       <NavbarMenu>
-        {searchInput}
         <div className="mx-4 mt-2 flex flex-col gap-2">
           {siteConfig.navMenuItems.map((item, index) => (
             <NavbarMenuItem key={`${item}-${index}`}>
