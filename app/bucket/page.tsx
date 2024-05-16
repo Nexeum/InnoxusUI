@@ -28,7 +28,7 @@ import { Bucket } from "@/app/domain/model/bucket/bucket";
 import {
   getBuckets,
   createBucket,
-} from "@/app/domain/usecase/bucket/buckerService";
+} from "@/app/domain/usecase/bucket/bucketService";
 
 export default function BucketPage() {
   const { isOpen, onOpen, onOpenChange } = useDisclosure();

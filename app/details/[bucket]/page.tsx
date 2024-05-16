@@ -25,7 +25,7 @@ import {
 import { usePathname } from "next/navigation";
 
 import { Bucket } from "@/app/domain/model/bucket/bucket";
-import { getBucket } from "@/app/domain/usecase/bucket/buckerService";
+import { getBucket } from "@/app/domain/usecase/bucket/bucketService";
 
 export default function InternPage() {
   const pathname = usePathname();
