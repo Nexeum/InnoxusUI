@@ -2,7 +2,7 @@
 
 import React, { useEffect, useState, useMemo, useCallback } from "react";
 import toast, { Toaster } from "react-hot-toast";
-import { LanguagesIcon, PlusIcon } from "@/components/icons";
+import { LanguagesIcon, PlusIcon, SearchIcon } from "@/components/icons";
 import {
   Button,
   Dropdown,
@@ -22,9 +22,13 @@ import {
   CardBody,
   Link,
   Image,
+  Kbd,
 } from "@nextui-org/react";
-import { Bucket } from "./model/bucket";
-import { getBuckets, createBucket } from "./service/bucketService";
+import { Bucket } from "@/app/domain/model/bucket/bucket";
+import {
+  getBuckets,
+  createBucket,
+} from "@/app/domain/usecase/bucket/buckerService";
 
 export default function BucketPage() {
   const { isOpen, onOpen, onOpenChange } = useDisclosure();
@@ -83,7 +87,7 @@ export default function BucketPage() {
 
   return (
     <>
-      <section className="w-full py-3 md:py-6 lg:py-8 xl:py-12">
+      <section className="w-full">
         <div className="container px-4 md:px-6">
           <div className="flex flex-col items-center space-y-4 text-center">
             <div className="space-y-2">
@@ -101,8 +105,21 @@ export default function BucketPage() {
                 <Input
                   className="flex-1"
                   placeholder="Search for buckets..."
+                  startContent={
+                    <SearchIcon className="text-base text-default-400 pointer-events-none flex-shrink-0" />
+                  }
                   type="search"
                   variant="bordered"
+                  classNames={{
+                    inputWrapper: "bg-default-100",
+                    input: "text-sm",
+                  }}
+                  endContent={
+                    <Kbd className="hidden lg:inline-block" keys={["command"]}>
+                      K
+                    </Kbd>
+                  }
+                  labelPlacement="outside"
                   value={search}
                   onChange={(e) => setSearch(e.target.value)}
                 />
@@ -149,7 +166,7 @@ export default function BucketPage() {
                 />
                 <div className="space-y-2">
                   <div className="flex items-center space-x-2">
-                    <Link href={`/intern/${bucket.name}`}>
+                    <Link color="foreground" href={`/details/${bucket.name}`}>
                       <h3 className="text-lg font-medium">{bucket.name}</h3>
                     </Link>
                     <Chip className="px-2 py-1 text-xs">Trending</Chip>
