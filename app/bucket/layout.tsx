@@ -1,13 +1,11 @@
 export default function BucketLayout({
-	children,
+  children,
 }: {
-	children: React.ReactNode;
+  children: React.ReactNode;
 }) {
-	return (
-		<section>
-			<div>
-				{children}
-			</div>
-		</section>
-	);
+  return (
+    <section>
+      <div>{children}</div>
+    </section>
+  );
 }
