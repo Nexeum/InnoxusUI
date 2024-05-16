@@ -14,7 +14,7 @@ import {
   Input,
 } from "@nextui-org/react";
 
-import { register } from "./service/authService";
+import { register } from "@/app/domain/usecase/auth/authService";
 
 export default function RegisterPage() {
   const [username, setUsername] = React.useState("");
@@ -23,7 +23,7 @@ export default function RegisterPage() {
 
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-  
+
     toast.promise(
       register(username, email, password),
       {
@@ -93,9 +93,7 @@ export default function RegisterPage() {
       </Card>
       <div className="text-center text-sm text-gray-500 dark:text-gray-400">
         Already have an account?
-        <Link showAnchorIcon
-          href="/login"
-        >
+        <Link showAnchorIcon href="/login">
           Login
         </Link>
       </div>
