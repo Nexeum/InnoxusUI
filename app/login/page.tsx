@@ -9,15 +9,16 @@ import {
   Button,
   Link,
   Divider,
-  Input
+  Input,
 } from "@nextui-org/react";
 
 import { LockIcon, MailIcon } from "@/components/icons";
 
 import toast, { Toaster } from "react-hot-toast";
 
-import { login } from "./service/authService";
 import { useRouter } from "next/navigation";
+
+import { login } from "@/app/domain/usecase/auth/authService";
 
 export default function LoginPage() {
   const router = useRouter();
