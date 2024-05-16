@@ -20,14 +20,10 @@ import {
   Chip,
   Card,
   CardBody,
-  Link
+  Link,
 } from "@nextui-org/react";
 
-import {
-  EyeIcon,
-  LockIcon,
-  PlusIcon,
-} from "@/components/icons";
+import { EyeIcon, LockIcon, PlusIcon } from "@/components/icons";
 
 import toast, { Toaster } from "react-hot-toast";
 
@@ -105,7 +101,7 @@ export default function WorkspacePage() {
   };
 
   return (
-    <main className="container mx-auto py-2 px-4 md:px-6">
+    <main className="container mx-auto px-4 md:px-6">
       <div className="flex items-center justify-between mb-6">
         <div className="flex items-center gap-4">
           <Button variant="bordered" onPress={onOpen}>
