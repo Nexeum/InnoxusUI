@@ -23,6 +23,7 @@ import {
   Link,
   Image,
   Kbd,
+  Skeleton,
 } from "@nextui-org/react";
 import { Bucket } from "@/app/domain/model/bucket/bucket";
 import {
@@ -36,7 +37,8 @@ export default function BucketPage() {
   const [search, setSearch] = useState("");
   const [data, setData] = useState<Bucket[]>([]);
   const [currentPage, setCurrentPage] = useState(1);
-  const totalPages = Math.ceil(data.length / 6);
+  const [totalPages, setTotalPages] = useState(0);
+  const [isLoading, setIsLoading] = useState(true);
 
   const handleSubmit = useCallback(
     async (event: React.FormEvent<HTMLFormElement>) => {
@@ -75,8 +77,15 @@ export default function BucketPage() {
 
   useEffect(() => {
     getBuckets()
-      .then(setData)
-      .catch((error) => console.error("Error fetching data: ", error));
+      .then((buckets) => {
+        setData(buckets);
+        setTotalPages(Math.ceil(buckets.length / 6));
+        setIsLoading(false);
+      })
+      .catch((error) => {
+        console.error("Error fetching data: ", error);
+        setIsLoading(false);
+      });
   }, []);
 
   const filteredData = useMemo(
@@ -153,43 +162,66 @@ export default function BucketPage() {
           </div>
         </div>
         <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-3 gap-6">
-          {filteredData
-            .slice((currentPage - 1) * 6, currentPage * 6)
-            .map((bucket) => (
-              <Card key={bucket.name}>
-                <CardBody className="py-6 grid grid-cols-[80px_1fr] gap-4 overflow-auto">
-                  <Image
-                    alt="Repository thumbnail"
-                    className="aspect-square rounded-md object-cover"
-                    height="80"
-                    src="/placeholder.svg"
-                    width="80"
-                  />
-                  <div className="space-y-2">
-                    <div className="flex items-center space-x-2">
-                      <Link
-                        color="foreground"
-                        href={`bucket/details/${bucket.name}`}
-                      >
-                        <h3 className="text-lg font-medium">{bucket.name}</h3>
-                      </Link>
-                      <Chip className="px-2 py-1 text-xs">Trending</Chip>
+          {isLoading
+            ? Array.from({ length: 3 }).map((_, index) => (
+                <Card key={index} radius="lg">
+                  <CardBody className="py-6 grid grid-cols-[80px_1fr] gap-4 overflow-auto">
+                    <Skeleton className="aspect-square rounded-md object-cover">
+                      <div className="h-20 w-20 rounded-md bg-default-300"></div>
+                    </Skeleton>
+                    <div className="space-y-2">
+                      <Skeleton className="w-3/5 rounded-lg">
+                        <div className="h-3 w-3/5 rounded-lg bg-default-200"></div>
+                      </Skeleton>
+                      <Skeleton className="w-4/5 rounded-lg">
+                        <div className="h-3 w-4/5 rounded-lg bg-default-200"></div>
+                      </Skeleton>
+                      <Skeleton className="w-2/5 rounded-lg">
+                        <div className="h-3 w-2/5 rounded-lg bg-default-300"></div>
+                      </Skeleton>
                     </div>
-                    <p className="text-gray-500 dark:text-gray-400">
-                      {bucket.description
-                        ? bucket.description
-                        : "No description"}
-                    </p>
-                    <div className="flex items-center space-x-4 text-sm text-gray-500 dark:text-gray-400">
-                      <div className="flex items-center">
-                        <LanguagesIcon className="mr-1 h-4 w-4" />
-                        {bucket.language ? bucket.language : "Unknown"}
+                  </CardBody>
+                </Card>
+              ))
+            : filteredData
+                .slice((currentPage - 1) * 6, currentPage * 6)
+                .map((bucket) => (
+                  <Card key={bucket.name}>
+                    <CardBody className="py-6 grid grid-cols-[80px_1fr] gap-4 overflow-auto">
+                      <Image
+                        alt="Repository thumbnail"
+                        className="aspect-square rounded-md object-cover"
+                        height="80"
+                        src="/placeholder.svg"
+                        width="80"
+                      />
+                      <div className="space-y-2">
+                        <div className="flex items-center space-x-2">
+                          <Link
+                            color="foreground"
+                            href={`bucket/details/${bucket.name}`}
+                          >
+                            <h3 className="text-lg font-medium">
+                              {bucket.name}
+                            </h3>
+                          </Link>
+                          <Chip className="px-2 py-1 text-xs">Trending</Chip>
+                        </div>
+                        <p className="text-gray-500 dark:text-gray-400">
+                          {bucket.description
+                            ? bucket.description
+                            : "No description"}
+                        </p>
+                        <div className="flex items-center space-x-4 text-sm text-gray-500 dark:text-gray-400">
+                          <div className="flex items-center">
+                            <LanguagesIcon className="mr-1 h-4 w-4" />
+                            {bucket.language ? bucket.language : "Unknown"}
+                          </div>
+                        </div>
                       </div>
-                    </div>
-                  </div>
-                </CardBody>
-              </Card>
-            ))}
+                    </CardBody>
+                  </Card>
+                ))}
         </div>
         <Toaster />
       </section>
