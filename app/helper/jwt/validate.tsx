@@ -26,3 +26,7 @@ export const validateToken = async (token: string) => {
     return false;
   }
 };
+
+export const removeJwtCookie = () => {
+  document.cookie = "jwt=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
+};
