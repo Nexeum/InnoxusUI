@@ -1,5 +1,17 @@
+const API_BASE_URL = "http://localhost:8090/v1/buckets";
+
+async function fetchJson(url: string, options?: RequestInit) {
+  const response = await fetch(url, options);
+
+  if (!response.ok) {
+    throw new Error(`Error ${response.status}: ${response.statusText}`);
+  }
+
+  return response.json();
+}
+
 export async function createBucket(name: string) {
-  const response = await fetch("http://localhost:8090/v1/buckets/create", {
+  const response = await fetchJson(`${API_BASE_URL}/create`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
@@ -9,31 +21,13 @@ export async function createBucket(name: string) {
     }),
   });
 
-  if (!response.ok) {
-    throw new Error("Bucket creation failed");
-  }
-
   return response;
 }
 
 export async function getBuckets() {
-  const response = await fetch("http://localhost:8090/v1/buckets/get");
-
-  if (!response.ok) {
-    throw new Error("Error fetching buckets");
-  }
-
-  const data = await response.json();
-  return data;
+  return fetchJson(`${API_BASE_URL}/get`);
 }
 
 export async function getBucket(name: string) {
-  const response = await fetch(`http://localhost:8090/v1/buckets/get/${name}`);
-
-  if (!response.ok) {
-    throw new Error("Error fetching bucket");
-  }
-
-  const data = await response.json();
-  return data;
+  return fetchJson(`${API_BASE_URL}/get/${name}`);
 }
