@@ -123,9 +123,6 @@ export default function BucketPage() {
                   value={search}
                   onChange={(e) => setSearch(e.target.value)}
                 />
-                <Button variant="bordered" type="submit">
-                  Search
-                </Button>
               </form>
             </div>
           </div>
@@ -166,7 +163,7 @@ export default function BucketPage() {
                 />
                 <div className="space-y-2">
                   <div className="flex items-center space-x-2">
-                    <Link color="foreground" href={`/details/${bucket.name}`}>
+                    <Link color="foreground" href={`bucket/details/${bucket.name}`}>
                       <h3 className="text-lg font-medium">{bucket.name}</h3>
                     </Link>
                     <Chip className="px-2 py-1 text-xs">Trending</Chip>
