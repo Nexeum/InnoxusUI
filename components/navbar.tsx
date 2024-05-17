@@ -21,14 +21,13 @@ import NextLink from "next/link";
 import clsx from "clsx";
 
 import { ThemeSwitch } from "@/components/theme-switch";
-import {
-  GithubIcon,
-  DiscordIcon,
-  LockIcon,
-  Logo,
-} from "@/components/icons";
+import { GithubIcon, DiscordIcon, LockIcon, Logo } from "@/components/icons";
 
-import { getJwtFromCookie, validateToken } from "@/app/helper/jwt/validate";
+import {
+  getJwtFromCookie,
+  validateToken,
+  removeJwtCookie,
+} from "@/app/helper/jwt/validate";
 
 export const Navbar = () => {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
@@ -88,9 +87,10 @@ export const Navbar = () => {
           <Button
             as={Link}
             className="text-sm font-normal text-default-600 bg-default-100"
-            href={isLoggedIn ? "/logout" : siteConfig.links.sponsor}
+            href={isLoggedIn ? "/" : siteConfig.links.sponsor}
             startContent={<LockIcon />}
             variant="flat"
+            onClick={isLoggedIn ? removeJwtCookie : undefined}
           >
             {isLoggedIn ? "Logout" : "Login"}
           </Button>
