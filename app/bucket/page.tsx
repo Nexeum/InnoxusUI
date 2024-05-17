@@ -35,6 +35,8 @@ export default function BucketPage() {
   const [nameBucket, setNameBucket] = useState("");
   const [search, setSearch] = useState("");
   const [data, setData] = useState<Bucket[]>([]);
+  const [currentPage, setCurrentPage] = useState(1);
+  const totalPages = Math.ceil(data.length / 6);
 
   const handleSubmit = useCallback(
     async (event: React.FormEvent<HTMLFormElement>) => {
@@ -151,41 +153,53 @@ export default function BucketPage() {
           </div>
         </div>
         <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-3 gap-6">
-          {filteredData.map((bucket) => (
-            <Card key={bucket.name}>
-              <CardBody className="py-6 grid grid-cols-[80px_1fr] gap-4 overflow-auto">
-                <Image
-                  alt="Repository thumbnail"
-                  className="aspect-square rounded-md object-cover"
-                  height="80"
-                  src="/placeholder.svg"
-                  width="80"
-                />
-                <div className="space-y-2">
-                  <div className="flex items-center space-x-2">
-                    <Link color="foreground" href={`bucket/details/${bucket.name}`}>
-                      <h3 className="text-lg font-medium">{bucket.name}</h3>
-                    </Link>
-                    <Chip className="px-2 py-1 text-xs">Trending</Chip>
-                  </div>
-                  <p className="text-gray-500 dark:text-gray-400">
-                    {bucket.description ? bucket.description : "No description"}
-                  </p>
-                  <div className="flex items-center space-x-4 text-sm text-gray-500 dark:text-gray-400">
-                    <div className="flex items-center">
-                      <LanguagesIcon className="mr-1 h-4 w-4" />
-                      {bucket.language ? bucket.language : "Unknown"}
+          {filteredData
+            .slice((currentPage - 1) * 6, currentPage * 6)
+            .map((bucket) => (
+              <Card key={bucket.name}>
+                <CardBody className="py-6 grid grid-cols-[80px_1fr] gap-4 overflow-auto">
+                  <Image
+                    alt="Repository thumbnail"
+                    className="aspect-square rounded-md object-cover"
+                    height="80"
+                    src="/placeholder.svg"
+                    width="80"
+                  />
+                  <div className="space-y-2">
+                    <div className="flex items-center space-x-2">
+                      <Link
+                        color="foreground"
+                        href={`bucket/details/${bucket.name}`}
+                      >
+                        <h3 className="text-lg font-medium">{bucket.name}</h3>
+                      </Link>
+                      <Chip className="px-2 py-1 text-xs">Trending</Chip>
+                    </div>
+                    <p className="text-gray-500 dark:text-gray-400">
+                      {bucket.description
+                        ? bucket.description
+                        : "No description"}
+                    </p>
+                    <div className="flex items-center space-x-4 text-sm text-gray-500 dark:text-gray-400">
+                      <div className="flex items-center">
+                        <LanguagesIcon className="mr-1 h-4 w-4" />
+                        {bucket.language ? bucket.language : "Unknown"}
+                      </div>
                     </div>
                   </div>
-                </div>
-              </CardBody>
-            </Card>
-          ))}
+                </CardBody>
+              </Card>
+            ))}
         </div>
         <Toaster />
       </section>
       <div className="mt-6 flex justify-center items-center">
-        <Pagination showControls total={5} initialPage={1} />
+        <Pagination
+          showControls
+          total={totalPages}
+          initialPage={1}
+          onChange={(newPage) => setCurrentPage(newPage)}
+        />
       </div>
       <Modal isOpen={isOpen} onOpenChange={onOpenChange}>
         <ModalContent>
