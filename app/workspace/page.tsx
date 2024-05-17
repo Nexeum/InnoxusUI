@@ -27,37 +27,31 @@ import { EyeIcon, LockIcon, PlusIcon } from "@/components/icons";
 
 import toast, { Toaster } from "react-hot-toast";
 
+import {
+  getWorkspaces,
+  createWorkspace,
+} from "@/app/domain/usecase/workspace/workspaceService";
+import { Workspace } from "@/app/domain/model/workspace/workspace";
+
 export default function WorkspacePage() {
   const { isOpen, onOpen, onOpenChange } = useDisclosure();
   const [workspace, setWorkspace] = useState("");
   const [description, setDescription] = useState("");
   const [workspaceType, setWorkspaceType] = useState("public");
   const [password, setPassword] = useState("");
-  const [workspaces, setWorkspaces] = useState<any[]>([]);
-  const [selectedWorkspace, setSelectedWorkspace] = useState<any>(null);
+  const [workspaces, setWorkspaces] = useState<Workspace[]>([]);
+  const [selectedWorkspace, setSelectedWorkspace] = useState<Workspace>();
   const [enteredPassword, setEnteredPassword] = useState("");
 
   useEffect(() => {
-    fetch("http://localhost:8080/v1/workspaces/all")
-      .then((response) => response.json())
-      .then((data) => setWorkspaces(data));
+    getWorkspaces().then((data) => setWorkspaces(data));
   }, []);
 
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
 
     toast.promise(
-      fetch("http://localhost:8080/v1/workspaces/create", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          name: workspace,
-          description: description,
-          password: password,
-        }),
-      }),
+      createWorkspace(workspace, description, password),
       {
         loading: "Creating...",
         success: (res) => {
@@ -93,7 +87,7 @@ export default function WorkspacePage() {
 
   const handleJoinSubmit = (event: any) => {
     event.preventDefault();
-    if (selectedWorkspace.password === enteredPassword) {
+    if (selectedWorkspace && selectedWorkspace.password === enteredPassword) {
       window.location.href = "/workspace/intern";
     } else {
       toast.error("Incorrect password");
@@ -134,12 +128,11 @@ export default function WorkspacePage() {
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
         {workspaces.map((workspace) => (
           <Card className="relative group overflow-hidden" key={workspace.id}>
-            <Link className="absolute inset-0 z-10" href="#">
-              <span className="sr-only">View room</span>
-            </Link>
             <CardBody className="p-6 flex flex-col justify-between h-full">
               <div>
-                <h3 className="text-xl font-semibold">{workspace.name}</h3>
+                <Link color="foreground" href={`workspace/details/${workspace.name}`}>
+                  <h3 className="text-xl font-semibold">{workspace.name}</h3>
+                </Link>
                 <p className="text-gray-500 dark:text-gray-400 mt-2">
                   {workspace.description}
                 </p>
