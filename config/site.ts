@@ -31,6 +31,6 @@ export const siteConfig = {
         github: "https://github.com/Nexeum/InnoxusUI",
         docs: "https://innoxus.gitbook.io/docs",
         discord: "https://discord.gg/9b6yyZKmH4",
-        sponsor: "/login"
+        sponsor: "/auth/login"
     },
 };
