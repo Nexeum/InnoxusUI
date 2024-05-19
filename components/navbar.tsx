@@ -27,17 +27,21 @@ import {
   getJwtFromCookie,
   validateToken,
   removeJwtCookie,
+  getEmailFromJWT,
 } from "@/app/helper/jwt/validate";
 
 export const Navbar = () => {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [email, setEmail] = useState("");
 
   useEffect(() => {
     const token = getJwtFromCookie();
     if (token) {
       validateToken(token).then(setIsLoggedIn);
+      getEmailFromJWT(token).then(setEmail);
+      localStorage.setItem("email", email);
     }
-  }, []);
+  }, [email]);
 
   return (
     <NextUINavbar maxWidth="xl" position="sticky">
