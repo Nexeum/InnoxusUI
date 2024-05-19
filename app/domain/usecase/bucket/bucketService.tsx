@@ -1,17 +1,39 @@
+import { Bucket } from "@/app/domain/model/bucket/bucket";
+
 const API_BASE_URL = "http://localhost:8090/v1/buckets";
 
-async function fetchJson(url: string, options?: RequestInit) {
-  const response = await fetch(url, options);
+export async function createBucket(name: string, owner: string) {
+  const response = await fetch(`${API_BASE_URL}/create`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({
+      name,
+      owner,
+    }),
+  });
 
   if (!response.ok) {
     throw new Error(`Error ${response.status}: ${response.statusText}`);
   }
 
-  return response.json();
+  return "Bucket created successful";
 }
 
-export async function createBucket(name: string) {
-  const response = await fetchJson(`${API_BASE_URL}/create`, {
+export async function getBuckets(): Promise<Bucket[]> {
+  const response = await fetch(`${API_BASE_URL}/get`);
+
+  if (!response.ok) {
+    throw new Error(`Error ${response.status}: ${response.statusText}`);
+  }
+
+  const data = await response.json();
+  return data;
+}
+
+export async function getBucket(name: string): Promise<Bucket[]> {
+  const response = await fetch(`${API_BASE_URL}/get`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
@@ -21,13 +43,10 @@ export async function createBucket(name: string) {
     }),
   });
 
-  return response;
-}
+  if (!response.ok) {
+    throw new Error(`Error ${response.status}: ${response.statusText}`);
+  }
 
-export async function getBuckets() {
-  return fetchJson(`${API_BASE_URL}/get`);
-}
-
-export async function getBucket(name: string) {
-  return fetchJson(`${API_BASE_URL}/get/${name}`);
+  const data = await response.json();
+  return [data];
 }
