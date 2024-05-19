@@ -17,12 +17,10 @@ import {
   ModalHeader,
   Pagination,
   useDisclosure,
-  Chip,
   Card,
   CardBody,
   Link,
   Image,
-  Kbd,
   Skeleton,
 } from "@nextui-org/react";
 import { Bucket } from "@/app/domain/model/bucket/bucket";
@@ -30,6 +28,8 @@ import {
   getBuckets,
   createBucket,
 } from "@/app/domain/usecase/bucket/bucketService";
+
+import { useRouter } from "next/navigation";
 
 export default function BucketPage() {
   const { isOpen, onOpen, onOpenChange } = useDisclosure();
@@ -39,28 +39,42 @@ export default function BucketPage() {
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(0);
   const [isLoading, setIsLoading] = useState(true);
+  const [owner, setOwner] = useState("");
+
+  const router = useRouter();
+
+  useEffect(() => {
+    getBuckets()
+      .then((buckets) => {
+        setData(buckets);
+        setTotalPages(Math.ceil(buckets.length / 6));
+        setIsLoading(false);
+        const storage = localStorage.getItem("email");
+        setOwner(storage ? storage : "");
+      })
+      .catch((error) => {
+        console.error("Error fetching data: ", error);
+        setIsLoading(false);
+      });
+  }, []);
 
   const handleSubmit = useCallback(
     async (event: React.FormEvent<HTMLFormElement>) => {
       event.preventDefault();
 
       toast.promise(
-        createBucket(nameBucket),
+        createBucket(nameBucket, owner),
         {
           loading: "Creating...",
-          success: (res) => {
-            if (res.ok) {
-              getBuckets()
-                .then(setData)
-                .catch((error) =>
-                  console.error("Error fetching data: ", error)
-                );
-              return "Bucket created successful";
-            } else {
-              return "Bucket created failed";
-            }
+          success: () => {
+            getBuckets()
+              .then(setData)
+              .catch((error) => console.error("Error fetching data: ", error));
+            
+            router.push("/bucket/details/" + nameBucket);
+            return "Bucket created successful";
           },
-          error: "Bucket created failed",
+          error: (err) => err.message,
         },
         {
           success: {
@@ -72,21 +86,8 @@ export default function BucketPage() {
         }
       );
     },
-    [nameBucket]
+    [nameBucket, owner, router]
   );
-
-  useEffect(() => {
-    getBuckets()
-      .then((buckets) => {
-        setData(buckets);
-        setTotalPages(Math.ceil(buckets.length / 6));
-        setIsLoading(false);
-      })
-      .catch((error) => {
-        console.error("Error fetching data: ", error);
-        setIsLoading(false);
-      });
-  }, []);
 
   const filteredData = useMemo(
     () =>
@@ -125,11 +126,6 @@ export default function BucketPage() {
                     inputWrapper: "bg-default-100",
                     input: "text-sm",
                   }}
-                  endContent={
-                    <Kbd className="hidden lg:inline-block" keys={["command"]}>
-                      K
-                    </Kbd>
-                  }
                   labelPlacement="outside"
                   value={search}
                   onChange={(e) => setSearch(e.target.value)}
@@ -205,7 +201,6 @@ export default function BucketPage() {
                               {bucket.name}
                             </h3>
                           </Link>
-                          <Chip className="px-2 py-1 text-xs">Trending</Chip>
                         </div>
                         <p className="text-gray-500 dark:text-gray-400">
                           {bucket.description
