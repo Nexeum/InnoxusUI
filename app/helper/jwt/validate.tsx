@@ -1,32 +1,40 @@
+const API_URL = "http://localhost:8089/v1/auth";
+const JWT_COOKIE_NAME = "jwt";
+
 export const getJwtFromCookie = () => {
   const jwtCookie = document.cookie
     .split("; ")
-    .find((row) => row.startsWith("jwt="));
+    .find((row) => row.startsWith(`${JWT_COOKIE_NAME}=`));
   return jwtCookie ? jwtCookie.split("=")[1] : null;
 };
 
-export const validateToken = async (token: string) => {
-  try {
-    const response = await fetch("http://localhost:8089/v1/auth/validate", {
-      method: "POST",
-      headers: {
-        "Content-Type": "text/plain",
-      },
-      body: token,
-    });
+const fetchFromApi = async (endpoint: string, token: string) => {
+  const response = await fetch(`${API_URL}/${endpoint}`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({
+      token,
+    }),
+  });
 
-    if (!response.ok) {
-      throw new Error(`HTTP error! status: ${response.status}`);
-    }
-
-    const data = await response.text();
-    return data === "true";
-  } catch (error) {
-    console.error("Failed to validate token:", error);
-    return false;
+  if (!response.ok) {
+    throw new Error(`HTTP error! status: ${response.status}`);
   }
+
+  return await response.text();
+};
+
+export const validateToken = async (token: string) => {
+  const data = await fetchFromApi("validate", token);
+  return data === "true";
 };
 
 export const removeJwtCookie = () => {
-  document.cookie = "jwt=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
+  document.cookie = `${JWT_COOKIE_NAME}=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;`;
+};
+
+export const getEmailFromJWT = async (token: string) => {
+  return await fetchFromApi("email", token);
 };
