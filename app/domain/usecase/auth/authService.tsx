@@ -1,5 +1,7 @@
+const BASE_URL = "http://localhost:8089/v1/auth";
+
 export async function login(email: string, password: string) {
-  const response = await fetch("http://localhost:8089/v1/auth/login", {
+  const response = await fetch(`${BASE_URL}/login`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
@@ -25,7 +27,7 @@ export async function register(
   email: string,
   password: string
 ) {
-  const response = await fetch("http://localhost:8089/v1/auth/register", {
+  const response = await fetch(`${BASE_URL}/register`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
