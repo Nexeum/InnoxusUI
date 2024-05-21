@@ -10,13 +10,29 @@ import {
   Link,
 } from "@nextui-org/react";
 
-import { GitBranchIcon, StarIcon } from "@/components/icons";
+import React, { useEffect, useState } from "react";
+
+import { GitBranchIcon } from "@/components/icons";
 
 import { usePathname } from "next/navigation";
+import { Bucket } from "@/app/domain/model/bucket/bucket";
+
+import { getBucket } from "@/app/domain/usecase/bucket/bucketService";
+
 export const Header = () => {
   const pathname = usePathname();
+  const [data, setData] = useState<Bucket[]>([]);
+  const [selectedBranch, setSelectedBranch] = useState("Main");
+
   const segments = pathname.split("/");
   const name = segments[3] || "default";
+
+  useEffect(() => {
+    getBucket(name)
+      .then(setData)
+      .catch((error) => console.error("Error fetching data: ", error));
+  }, [name]);
+
   return (
     <>
       <header className="flex items-center justify-between px-6">
@@ -44,9 +60,6 @@ export const Header = () => {
           <Link color="foreground" href={`/bucket/details/${name}`}>
             Code
           </Link>
-          <Link color="foreground" href={`/bucket/details/${name}/pulls`}>
-            Pull requests
-          </Link>
           <Link color="foreground" href={`/bucket/details/${name}/pipelines`}>
             Pipelines
           </Link>
@@ -54,19 +67,26 @@ export const Header = () => {
             <DropdownTrigger>
               <Button variant="bordered">
                 <GitBranchIcon className="h-4 w-4" />
-                Branch
+                {selectedBranch}
               </Button>
             </DropdownTrigger>
             <DropdownMenu aria-label="Static Actions">
-              <DropdownItem key="new">Main</DropdownItem>
-              <DropdownItem key="old">Develop</DropdownItem>
-              <DropdownItem key="most">feature/new-component</DropdownItem>
+              {data[0]?.branches ? (
+                data[0].branches.map((branch, index) => (
+                  <DropdownItem
+                    key={index}
+                    onClick={() => setSelectedBranch(branch)}
+                  >
+                    {branch}
+                  </DropdownItem>
+                ))
+              ) : (
+                <DropdownItem onClick={() => setSelectedBranch("Main")}>
+                  Main
+                </DropdownItem>
+              )}
             </DropdownMenu>
           </Dropdown>
-          <Button className="px-4 py-2" variant="bordered">
-            <StarIcon className="mr-2 h-4 w-4" />
-            Star
-          </Button>
         </nav>
       </header>
     </>
