@@ -2,7 +2,7 @@ import { Bucket } from "@/app/domain/model/bucket/bucket";
 
 const API_BASE_URL = "http://localhost:8090/v1/buckets";
 
-export async function createBucket(name: string, owner: string) {
+export async function createBucket(name: string, description: string, owner: string) {
   const response = await fetch(`${API_BASE_URL}/create`, {
     method: "POST",
     headers: {
@@ -10,6 +10,7 @@ export async function createBucket(name: string, owner: string) {
     },
     body: JSON.stringify({
       name,
+      description,
       owner,
     }),
   });
