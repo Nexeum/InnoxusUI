@@ -36,10 +36,6 @@ export const Content = () => {
               <LanguagesIcon className="h-4 w-4" />
               <span>{data[0]?.language || "Unknown"}</span>
             </div>
-            <div className="flex items-center space-x-2 text-sm text-gray-500 dark:text-gray-400">
-              <StarIcon className="h-4 w-4" />
-              <span>20k</span>
-            </div>
           </div>
         </div>
       </div>
