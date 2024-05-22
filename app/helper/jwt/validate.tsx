@@ -1,3 +1,5 @@
+import { User } from "@/app/domain/model/user/user";
+
 const API_URL = "http://localhost:8089/v1/auth";
 const JWT_COOKIE_NAME = "jwt";
 
@@ -26,6 +28,24 @@ const fetchFromApi = async (endpoint: string, token: string) => {
   return await response.text();
 };
 
+const fetchUser = async (endpoint: string, email: string) => {
+  const response = await fetch(`${API_URL}/${endpoint}`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({
+      email,
+    }),
+  });
+
+  if (!response.ok) {
+    throw new Error(`HTTP error! status: ${response.status}`);
+  }
+
+  return await response.text();
+};
+
 export const validateToken = async (token: string) => {
   const data = await fetchFromApi("validate", token);
   return data === "true";
@@ -37,4 +57,8 @@ export const removeJwtCookie = () => {
 
 export const getEmailFromJWT = async (token: string) => {
   return await fetchFromApi("email", token);
+};
+
+export const getUsername = async (email: string) => {
+  return await fetchUser("user", email);
 };

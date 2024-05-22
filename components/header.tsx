@@ -31,6 +31,8 @@ export const Header = () => {
     getBucket(name)
       .then(setData)
       .catch((error) => console.error("Error fetching data: ", error));
+
+    
   }, [name]);
 
   return (

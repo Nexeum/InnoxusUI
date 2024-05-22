@@ -28,20 +28,24 @@ import {
   validateToken,
   removeJwtCookie,
   getEmailFromJWT,
+  getUsername,
 } from "@/app/helper/jwt/validate";
 
 export const Navbar = () => {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [email, setEmail] = useState("");
+  const [username, setUsername] = useState("");
 
   useEffect(() => {
     const token = getJwtFromCookie();
     if (token) {
       validateToken(token).then(setIsLoggedIn);
       getEmailFromJWT(token).then(setEmail);
+      getUsername(email).then(setUsername);
       localStorage.setItem("email", email);
+      localStorage.setItem("username", username);
     }
-  }, [email]);
+  }, [email, username]);
 
   return (
     <NextUINavbar maxWidth="xl" position="sticky">
