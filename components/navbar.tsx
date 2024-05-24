@@ -47,6 +47,16 @@ export const Navbar = () => {
     }
   }, [email, username]);
 
+  const getLinkColor = (index: number, itemsLength: number) => {
+    if (index === 2) {
+      return "primary";
+    } else if (index === itemsLength - 1) {
+      return "danger";
+    } else {
+      return "foreground";
+    }
+  };
+
   return (
     <NextUINavbar maxWidth="xl" position="sticky">
       <NavbarContent className="basis-1/5 sm:basis-full" justify="start">
@@ -116,15 +126,9 @@ export const Navbar = () => {
       <NavbarMenu>
         <div className="mx-4 mt-2 flex flex-col gap-2">
           {siteConfig.navMenuItems.map((item, index) => (
-            <NavbarMenuItem key={`${item}-${index}`}>
+            <NavbarMenuItem key={`${item.href}-${index}`}>
               <Link
-                color={
-                  index === 2
-                    ? "primary"
-                    : index === siteConfig.navMenuItems.length - 1
-                    ? "danger"
-                    : "foreground"
-                }
+                color={getLinkColor(index, siteConfig.navMenuItems.length)}
                 href="#"
                 size="lg"
               >
