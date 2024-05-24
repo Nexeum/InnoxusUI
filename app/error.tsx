@@ -2,13 +2,13 @@
 
 import { useEffect } from "react";
 
-export default function Error({
+export default function ErrorPage({
   error,
   reset,
-}: {
+}: Readonly<{
   error: Error;
   reset: () => void;
-}) {
+}>) {
   useEffect(() => {
     console.error(error);
   }, [error]);
