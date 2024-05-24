@@ -199,11 +199,7 @@ export const MailIcon: React.FC<IconSvgProps> = ({
 }) => {
   return (
     <svg
-      aria-hidden="true"
-      fill="none"
-      focusable="false"
       height="1em"
-      role="presentation"
       viewBox="0 0 24 24"
       width="1em"
       {...props}
@@ -224,11 +220,7 @@ export const LockIcon: React.FC<IconSvgProps> = ({
 }) => {
   return (
     <svg
-      aria-hidden="true"
-      fill="none"
-      focusable="false"
       height="1em"
-      role="presentation"
       viewBox="0 0 24 24"
       width="1em"
       {...props}
@@ -275,10 +267,7 @@ export const MoonFilledIcon = ({
   ...props
 }: IconSvgProps) => (
   <svg
-    aria-hidden="true"
-    focusable="false"
     height={size || height}
-    role="presentation"
     viewBox="0 0 24 24"
     width={size || width}
     {...props}
@@ -822,10 +811,7 @@ export const SunFilledIcon = ({
   ...props
 }: IconSvgProps) => (
   <svg
-    aria-hidden="true"
-    focusable="false"
     height={size || height}
-    role="presentation"
     viewBox="0 0 24 24"
     width={size || width}
     {...props}
@@ -857,11 +843,7 @@ export const UserIcon = (props: IconSvgProps) => (
 
 export const SearchIcon = (props: IconSvgProps) => (
   <svg
-    aria-hidden="true"
-    fill="none"
-    focusable="false"
     height="1em"
-    role="presentation"
     viewBox="0 0 24 24"
     width="1em"
     {...props}
