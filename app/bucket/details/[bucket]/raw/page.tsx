@@ -160,7 +160,6 @@ export default function RawPage() {
               <h2>Contributing</h2>
               <p>
                 If youd like to contribute to the project, please read the
-                <a href="#">contributing guidelines</a>.{"\n"}
               </p>
             </div>
           </div>
