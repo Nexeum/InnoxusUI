@@ -5,10 +5,6 @@ import toast, { Toaster } from "react-hot-toast";
 import { LanguagesIcon, PlusIcon, SearchIcon } from "@/components/icons";
 import {
   Button,
-  Dropdown,
-  DropdownItem,
-  DropdownMenu,
-  DropdownTrigger,
   Input,
   Modal,
   ModalBody,
@@ -34,6 +30,7 @@ import { useRouter } from "next/navigation";
 export default function BucketPage() {
   const { isOpen, onOpen, onOpenChange } = useDisclosure();
   const [nameBucket, setNameBucket] = useState("");
+  const [descriptionBucket, setDescriptionBucket] = useState("");
   const [search, setSearch] = useState("");
   const [data, setData] = useState<Bucket[]>([]);
   const [currentPage, setCurrentPage] = useState(1);
@@ -54,23 +51,22 @@ export default function BucketPage() {
       })
       .catch((error) => {
         console.error("Error fetching data: ", error);
-        setIsLoading(false);
       });
-  }, []);
+    }, []);
 
   const handleSubmit = useCallback(
     async (event: React.FormEvent<HTMLFormElement>) => {
       event.preventDefault();
 
       toast.promise(
-        createBucket(nameBucket, owner),
+        createBucket(nameBucket, descriptionBucket, owner),
         {
           loading: "Creating...",
           success: () => {
             getBuckets()
               .then(setData)
               .catch((error) => console.error("Error fetching data: ", error));
-            
+
             router.push("/bucket/details/" + nameBucket);
             return "Bucket created successful";
           },
@@ -86,7 +82,7 @@ export default function BucketPage() {
         }
       );
     },
-    [nameBucket, owner, router]
+    [nameBucket, descriptionBucket ,owner, router]
   );
 
   const filteredData = useMemo(
@@ -99,43 +95,7 @@ export default function BucketPage() {
 
   return (
     <>
-      <section className="w-full">
-        <div className="container px-4 md:px-6">
-          <div className="flex flex-col items-center space-y-4 text-center">
-            <div className="space-y-2">
-              <h1 className="text-3xl font-bold tracking-tighter sm:text-4xl md:text-5xl lg:text-6xl/none">
-                Discover Trending Buckets
-              </h1>
-              <p className="mx-auto max-w-[700px] text-gray-500 md:text-xl dark:text-gray-400">
-                Explore the latest and most popular open-source projects on
-                buckets. Find the tools and libraries you need to power your
-                next big idea.
-              </p>
-            </div>
-            <div className="w-full max-w-md">
-              <form className="flex space-x-2">
-                <Input
-                  className="flex-1"
-                  placeholder="Search for buckets..."
-                  startContent={
-                    <SearchIcon className="text-base text-default-400 pointer-events-none flex-shrink-0" />
-                  }
-                  type="search"
-                  variant="bordered"
-                  classNames={{
-                    inputWrapper: "bg-default-100",
-                    input: "text-sm",
-                  }}
-                  labelPlacement="outside"
-                  value={search}
-                  onChange={(e) => setSearch(e.target.value)}
-                />
-              </form>
-            </div>
-          </div>
-        </div>
-      </section>
-      <section className="container mx-auto py-2 px-4 md:px-6">
+      <section className="container mx-auto px-4 md:px-6">
         <div className="flex items-center justify-between mb-6">
           <div className="flex items-center gap-4">
             <Button variant="bordered" onPress={onOpen}>
@@ -144,17 +104,24 @@ export default function BucketPage() {
             </Button>
           </div>
           <div className="flex items-center gap-2">
-            <span className="text-gray-500 dark:text-gray-400">Sort by:</span>
-            <Dropdown>
-              <DropdownTrigger>
-                <Button variant="bordered">Newest</Button>
-              </DropdownTrigger>
-              <DropdownMenu aria-label="Static Actions">
-                <DropdownItem key="new">Newest</DropdownItem>
-                <DropdownItem key="old">Oldest</DropdownItem>
-                <DropdownItem key="most">Most popular</DropdownItem>
-              </DropdownMenu>
-            </Dropdown>
+            <form className="flex space-x-2">
+              <Input
+                className="flex-1"
+                placeholder="Search for buckets..."
+                startContent={
+                  <SearchIcon className="text-base text-default-400 pointer-events-none flex-shrink-0" />
+                }
+                type="search"
+                variant="bordered"
+                classNames={{
+                  inputWrapper: "bg-default-100",
+                  input: "text-sm",
+                }}
+                labelPlacement="outside"
+                value={search}
+                onChange={(e) => setSearch(e.target.value)}
+              />
+            </form>
           </div>
         </div>
         <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-3 gap-6">
@@ -222,6 +189,7 @@ export default function BucketPage() {
       </section>
       <div className="mt-6 flex justify-center items-center">
         <Pagination
+          isCompact
           showControls
           total={totalPages}
           initialPage={1}
@@ -246,6 +214,15 @@ export default function BucketPage() {
                     variant="bordered"
                     value={nameBucket}
                     onChange={(e) => setNameBucket(e.target.value)}
+                  />
+                  <Input
+                    id="description"
+                    required
+                    label="Description bucket"
+                    placeholder="Enter the description of your bucket"
+                    variant="bordered"
+                    value={descriptionBucket}
+                    onChange={(e) => setDescriptionBucket(e.target.value)}
                   />
                 </ModalBody>
                 <ModalFooter>
