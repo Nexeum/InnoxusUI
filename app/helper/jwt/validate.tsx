@@ -1,5 +1,3 @@
-import { User } from "@/app/domain/model/user/user";
-
 const API_URL = "http://localhost:8089/v1/auth";
 const JWT_COOKIE_NAME = "jwt";
 
