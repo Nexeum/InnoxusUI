@@ -3,17 +3,11 @@
 import React from "react";
 
 import {
-  Card,
-  CardBody,
-  CardHeader,
-  CardFooter,
   Chip,
 } from "@nextui-org/react";
 
 import {
-  ClockIcon,
   GitCommitVerticalIcon,
-  WorkflowIcon,
 } from "@/components/icons";
 
 import { Header } from "@/components/header";
