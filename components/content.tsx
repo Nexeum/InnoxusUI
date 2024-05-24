@@ -4,7 +4,7 @@ import React, { useEffect, useState } from "react";
 import { Bucket } from "@/app/domain/model/bucket/bucket";
 import { getBucket } from "@/app/domain/usecase/bucket/bucketService";
 
-import { LanguagesIcon, StarIcon } from "@/components/icons";
+import { LanguagesIcon } from "@/components/icons";
 
 import { usePathname } from "next/navigation";
 
@@ -22,7 +22,6 @@ export const Content = () => {
   }, [name]);
 
   return (
-    <>
       <div className="grid grid-cols-[1fr_auto] items-start gap-8">
         <div className="space-y-4">
           <div className="space-y-2">
@@ -39,6 +38,5 @@ export const Content = () => {
           </div>
         </div>
       </div>
-    </>
   );
 };
